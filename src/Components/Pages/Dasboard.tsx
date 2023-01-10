@@ -164,7 +164,7 @@ function Dasboard() {
                 <h1 className="text-blue pt-4 font-bold font-serif">
                   Transaction Status
                 </h1>
-                <table className="mx-auto rounded-sm mt-3">
+                <table className="mx-auto flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
                   <thead>
                     <tr className="bg-blue-800 rounded-md">
                       <th className="px-3 font-semibold text-lg text-white">
