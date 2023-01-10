@@ -1,0 +1,238 @@
+.lpage {
+  min-height: 100vh;
+}
+
+.loginImage {
+  background-image: url("../../Assets/2.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  filter: brightness(0.5);
+}
+
+.loginform,
+.regform {
+  max-width: 300px;
+  margin: auto;
+  margin-top: 30vh;
+}
+
+.regform {
+  margin-top: 17vh;
+}
+
+.loginform input,
+.regform input {
+  padding: 5px;
+}
+
+.loginform input::placeholder,
+.regform input::placeholder {
+  font-weight: 500;
+}
+
+/* .loginform input:valid {
+    border: 2px solid green;
+  } */
+
+.loginform input:invalid {
+  border: 2px solid red;
+}
+
+.loadsvg {
+  height: 20px;
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none;
+}
+
+.back {
+  font-size: 30px;
+  text-align: left;
+  margin-left: 25px;
+}
+
+.eyes {
+  position: absolute;
+  left: 90%;
+  top: 22px;
+}
+
+.homelogo {
+  max-height: 90px;
+  max-width: 100px;
+  margin: 0 auto;
+}
+
+.loaded svg {
+  margin: 0 auto;
+  color: white;
+}
+
+.loginform:focus,
+.regform:focus {
+  border: 2px solid green;
+}
+
+.hometop img {
+  max-height: 30px;
+}
+
+.hometop input {
+  max-height: 30px;
+}
+
+.navtoggler svg {
+  font-size: 100%;
+  height: 100%;
+  width: 100%;
+  max-height: 30px;
+}
+
+.container-d {
+  max-width: 2500px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.dashboardnav {
+  height: 100vh;
+}
+
+.hide {
+  opacity: 0;
+  width: 0px !important;
+  visibility: hidden;
+}
+
+.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.contentmain {
+  min-height: 90vh;
+  border-radius: 1.6rem;
+}
+
+.contentmain::before {
+  content: "";
+  width: 96.5%;
+  z-index: 9;
+  margin-top: -0.87rem;
+  border-radius: 1.6rem;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 5rem;
+  background-color: #fff3;
+}
+
+.contentmain:after {
+  content: "";
+  width: 92.5%;
+  z-index: 9;
+  margin-top: -1.76rem;
+  border-radius: 1.6rem;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 5rem;
+  background-color: #ffffff26;
+}
+
+.navimg {
+  height: 90px;
+  width: 75px;
+  margin: 0 auto;
+}
+
+.navli {
+  background-color: rgb(2, 2, 27, 0.6);
+  margin: 7px 0;
+}
+
+.logout {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+}
+
+.withdrawtext svg {
+  margin-top: 5px;
+}
+
+.logout svg {
+  color: white;
+}
+
+.logout p {
+  margin-top: -5px;
+}
+
+.dashback {
+  background-image: url("../../Assets/2.jpg");
+}
+
+.addbank input, .addbank select  {
+  border: 2px solid black;
+  height: 30px;
+  width: 100%;
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.okbtn {
+  max-width: 70px;
+}
+
+@media (max-width: 639px) {
+  .loginImage {
+    padding: 15vh;
+    min-width: 100vw;
+  }
+
+  .loginForm {
+    height: 70vh;
+  }
+
+  .loginform,
+  .regform {
+    position: relative;
+    top: -45vh;
+    z-index: 3;
+    background-color: whitesmoke;
+    padding: 25px 30px;
+    border-radius: 15px;
+    opacity: 0.98;
+    max-width: 330px;
+  }
+
+  .regform {
+    order: 1 !important;
+    top: -35vh;
+  }
+
+  .loginform input,
+  .regform input {
+    background: none;
+  }
+
+  .back {
+    position: absolute;
+    top: 10px;
+    z-index: 99;
+    color: white;
+  }
+}

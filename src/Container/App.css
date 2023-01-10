@@ -1,0 +1,97 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.preloader {
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.79);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+}
+
+.preloader-content {
+  margin: 0 auto;
+  padding: 100px;
+  z-index: 9;
+  position: fixed;
+}
+
+.preloaderimg {
+  animation: anim .6s infinite;
+}
+
+.modal, .bankform {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.644);
+  position: fixed;
+  height: 100vh;
+  z-index: 99;
+  width: 100vw;
+}
+
+.modal>div {
+  background-color: white;
+  margin: auto;
+  padding: 10px;
+  height: fit-content;
+  position: fixed;
+  display: flex;
+  min-width: 290px;
+  max-width: 300px;
+  margin: 50% 10px;
+}
+
+.bankcontent {
+  height: fit-content;
+}
+
+.modal-close {
+  width: 30px;
+  margin-left: auto;
+}
+
+@media (max-width: 639px) {
+  .preloaderimg {
+    animation: anim100 .6s infinite;
+  }
+  
+}
+
+@keyframes anim {
+  0% {
+    height: 190px;
+    opacity: .2;
+  }
+
+  100% {
+    height: 250px;
+    opacity: 1;
+  }
+}
+
+@keyframes anim100 {
+  0% {
+    height: 130px;
+    opacity: .2;
+  }
+
+  100% {
+    height: 170px;
+    opacity: 1;
+  }
+}
