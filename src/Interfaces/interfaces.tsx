@@ -5,7 +5,8 @@ export interface dataType {
   Tel: number;
   Username: string;
   Balance: number;
-  Account?: { Main: account; Aux: account };
+  Bank?: account[];
+  Type?: string;
 }
 
 export interface account {
@@ -22,7 +23,6 @@ export type HomeType = {
 export type navtype = {
   open: boolean;
   setOpen: (b: boolean) => void;
-  switchNav: (e: React.MouseEvent<HTMLElement>) => void;
 };
 
 export type Apptype = {

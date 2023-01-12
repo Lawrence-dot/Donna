@@ -125,6 +125,7 @@ function Login() {
           Email: "damil@gmail.com",
           Tel: "090779568585",
           Balance: 9,
+          Type: "Admin",
         },
       },
     });

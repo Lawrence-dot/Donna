@@ -69,6 +69,10 @@
   .preloaderimg {
     animation: anim100 .6s infinite;
   }
+
+  .modal>div {
+    margin: 37% 10px;
+  }
   
 }
 
