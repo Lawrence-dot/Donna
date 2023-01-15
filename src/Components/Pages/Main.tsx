@@ -160,12 +160,26 @@ function Main(props: Props) {
           <div></div>
         ) : props.datas !== undefined && props.datas!.Type === "Admin" ? (
           <div className="flex mt-4">
-            <div className="user w-40 h-772 py-12 px-9 bg-white text-xl">
+            <div className="user w-40 rounded-md h-72 py-12 px-12 bg-white text-xl">
               <span className="w-full mx-auto text-center">
                 <GrUserAdmin size="md" />
               </span>
               <span className="text-3xl"> {data} </span>
               Users
+            </div>
+            <div className="user rounded-md w-40 ml-2 h-72 py-12 px-12 bg-white text-xl">
+              <span className="w-full mx-auto text-center">
+                <GrUserAdmin size="md" />
+              </span>
+              <span className="text-3xl"> 0 </span>
+              New Users
+            </div>
+            <div className="user rounded-md w-40 ml-2 h-72 py-12 px-12 bg-white text-xl">
+              <span className="w-full mx-auto text-center">
+                <GrUserAdmin size="md" />
+              </span>
+              <span className="text-3xl"> 1 </span>
+              Admin User
             </div>
           </div>
         ) : (

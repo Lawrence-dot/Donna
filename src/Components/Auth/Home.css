@@ -208,7 +208,7 @@
   width: 98%;
 }
 
-.dashboardnav::before {
+/* .dashboardnav::before {
   content: "";
   background-size: 270px auto;
   background-position: right 3.5rem;
@@ -228,7 +228,7 @@
   width: 100%;
   background-repeat: no-repeat;
   opacity: 0;
-}
+} */
 
 @media (max-width: 639px) {
   .loginImage {
