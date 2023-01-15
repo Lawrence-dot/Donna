@@ -8,6 +8,8 @@ import Navbar from "./Navbar";
 import { navtype } from "../../Interfaces/interfaces";
 import { showModal } from "./Modal";
 import Main from "./Main";
+import { db } from "../../Firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export const navContext = createContext<navtype | null>(null);
 
@@ -16,19 +18,37 @@ function Dasboard() {
   const [open, setOpen] = useState<boolean>(false);
   const location = useLocation();
 
+  const fetchdata = async () => {
+    const data = await getDoc(doc(db, "Users", `${location.state.data.mail}`));
+    const dats = data.data();
+    setDatas(dats as dataType);
+    
+  };
+
   useEffect(() => {
-    setDatas(location.state.data);
+    (async () => {
+      const data = await getDoc(
+        doc(db, "Users", `${location.state.data.mail}`)
+      );
+      var dats = data.data();
+      console.log(location.state.data.mail);
+      setDatas(dats as dataType);
+    })();
+    // console.log(dats);
+    window.innerWidth > 639 ? setOpen(true) : setOpen(false);
+  }, [location.state.data.mail]);
+
+  useEffect(() => {
     showModal({
       type: "ok",
       title: `Welcome! ${location.state.data.Username}`,
     });
-    console.log(location.state.data);
 
     window.innerWidth > 639 ? setOpen(true) : setOpen(false);
-  }, [location.state.data]);
+  }, [location.state.data.Username]);
 
   return (
-    <navContext.Provider value={{ open, setOpen }}>
+    <navContext.Provider value={{ open, setOpen, fetchdata }}>
       <div className="dashBoard md:flex">
         <Navbar type={location.state.data.Type} />
 

@@ -197,6 +197,10 @@
   max-width: 70px;
 }
 
+#name:invalid, #number:invalid, #type:invalid {
+   border-color: red;
+}
+
 @media (max-width: 639px) {
   .loginImage {
     padding: 15vh;

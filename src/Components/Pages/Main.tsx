@@ -1,13 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { TbCurrencyNaira } from "react-icons/tb";
 import Bank from "./Bank";
 import { showModal } from "./Modal";
-import { addbank, AddBank } from "./AddBank";
+import { AddBank } from "./AddBank";
 import { GrAddCircle, GrUserAdmin } from "react-icons/gr";
-import { dataType } from "../../Interfaces/interfaces";
-import { collection, getDocs } from "firebase/firestore";
+import { dataType, history } from "../../Interfaces/interfaces";
+import {
+  collection,
+  getDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import { db } from "../../Firebase";
+import { navContext } from "../Pages/Dasboard";
+import Status from "./Status";
+import { DataRouterStateContext } from "react-router/dist/lib/context";
 
 interface Props {
   datas: dataType;
@@ -15,6 +25,9 @@ interface Props {
 
 function Main(props: Props) {
   var [data, setData] = useState<number>();
+  const [history, setHistory] = useState<history[]>([]);
+  const navcontext = useContext(navContext);
+
   const getDate = () => {
     var months = [
       "Jan",
@@ -47,8 +60,58 @@ function Main(props: Props) {
       const ext = datas.docs;
       setData(ext.length as number);
     };
+
     props.datas?.Type === "Admin" && fetchUser();
   }, [props.datas?.Type]);
+
+  useEffect(() => {
+    getrecords();
+    console.log(getrecords());
+  }, []);
+
+  const getrecords = async () => {
+    const dataref = doc(db, "History", "All");
+    const records = await getDoc(dataref);
+    var spliced = records.data()?.History;
+    var dara = spliced?.filter((item: history) => {
+      return (item.name = `${props.datas?.Username}`);
+    });
+    setHistory(dara as history[]);
+    console.log(dara);
+  };
+
+  const Addbanks = async () => {
+    const data = {
+      name: (document.getElementById("name") as HTMLInputElement)!.value,
+      number: Number(
+        (document.getElementById("number") as HTMLInputElement)!.value
+      ),
+      type: (document.getElementById("type") as HTMLInputElement)!.value,
+    };
+
+    const dataref = doc(db, "Users", "damilareojediran3");
+    if (data.name.length > 1 && data.number > 10000 && data.type.length > 1) {
+      await updateDoc(dataref, { Bank: arrayUnion(data) })
+        .then(() => {
+          navcontext?.fetchdata();
+          showModal({
+            type: "ok",
+            title: "Bank Added Successfully",
+          });
+        })
+        .catch((err) => {
+          showModal({
+            type: "ok",
+            title: err.message,
+          });
+        });
+    } else {
+      showModal({
+        type: "ok",
+        title: `${props.datas.Username} Please Fill Out All Input Fields Correctly`,
+      });
+    }
+  };
 
   return (
     <div className="dashcontent relative">
@@ -73,7 +136,8 @@ function Main(props: Props) {
               <span className="w-full mx-auto text-center">
                 <GrUserAdmin size="md" />
               </span>
-              <span className="text-3xl"> {data} </span> Users
+              <span className="text-3xl"> {data} </span>
+              Users
             </div>
           </div>
         )}
@@ -90,9 +154,39 @@ function Main(props: Props) {
         className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
         id="transact"
       >
-        <h1 className="text-blue pt-4 font-bold font-serif">
+        <h1 className="text-blue pt-4 font-bold font-serif mb-2">
           Transaction Status
         </h1>
+
+        {history.map((each) => {
+          return (
+            <Status
+              card={each.card as string}
+              type={each.card as string}
+              status={each.status as string}
+              id={49494}
+            />
+          );
+        })}
+      </div>
+
+      <div
+        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+        id="withdraw"
+      >
+        <h1 className="text-blue pt-4 font-bold font-serif">Withdraw Funds</h1>
+        <h2 className="flex withdrawtext justify-center">
+          {" "}
+          Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
+          {props.datas?.Balance}{" "}
+        </h2>
+      </div>
+
+      <div
+        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+        id="records"
+      >
+        <h1 className="text-blue pt-4 font-bold font-serif">General Records</h1>
         <table className="mx-auto flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
           <thead>
             <tr className="bg-blue-800 rounded-md">
@@ -120,95 +214,75 @@ function Main(props: Props) {
 
       <div
         className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="withdraw"
-      >
-        <h1 className="text-blue pt-4 font-bold font-serif">Withdraw Funds</h1>
-        <h2 className="flex withdrawtext justify-center">
-          {" "}
-          Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
-          {props.datas?.Balance}{" "}
-        </h2>
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="records"
-      >
-        <h1 className="text-blue pt-4 font-bold font-serif">General Records</h1>
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
         id="bank"
       >
-        <h1 className="text-blue pt-4 font-bold font-serif">
-          <div className="flex flex-col text-left">
-            <h1
-              onClick={
-                () =>
-                  showModal({
-                    type: "custom",
-                    title: "Add New Bank",
-                    custom: AddBank,
-                    function: addbank,
-                  })
-                // document.getelemen
-              }
-              className="text-blue-900 mx-auto w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center"
-            >
-              <GrAddCircle className="mt-1 mr-1 text-blue-900" color="blue" />{" "}
-              Add A New Bank
-            </h1>
-            <div className="w-full md:w-1/2 mr-2 sm:mx-2">
-              {props.datas?.Bank?.map((each) => {
-                return (
-                  <Bank
-                    name={each.name as string}
-                    number={each.number as number}
-                    type={each.type as string}
-                  />
-                );
-              })}
-            </div>
+        <div className="flex flex-col text-left">
+          <h1
+            onClick={() => {
+              showModal({
+                type: "custom",
+                title: "Add New Bank",
+                custom: AddBank,
+                function: Addbanks,
+              });
+            }}
+            className="text-blue-900 mx-auto mt-3 w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center"
+          >
+            <GrAddCircle className="mt-1 mr-1 text-blue-900" color="blue" /> Add
+            A New Bank
+          </h1>
+          <div className="flex flex-col md:flex-row font-semibold mr-2 sm:mx-2">
+            {props.datas?.Bank?.map((each, id) => {
+              return (
+                <Bank
+                  name={each.name as string}
+                  number={each.number as number}
+                  type={each.type as string}
+                  pos={id}
+                  bank={props.datas!.Bank as []}
+                  key={id}
+                />
+              );
+            })}
           </div>
-        </h1>
+        </div>
       </div>
 
       <div
         className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
         id="user"
       >
-        <h1 className="text-blue pt-4 font-bold font-serif">
-          <div className="flex flex-col text-left">
-            <h1
-              onClick={
-                () =>
-                  showModal({
-                    type: "custom",
-                    title: "Add New Bank",
-                    custom: AddBank,
-                    function: addbank,
-                  })
-                // document.getelemen
-              }
-              className="text-blue-900 mx-auto w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center"
-            >
-              <GrAddCircle className="mt-1 mr-1 text-blue-900" color="blue" />{" "}
-              Add A New Bank
-            </h1>
-            <div className="w-full md:w-1/2 mr-2 sm:mx-2">
-              {props.datas?.Bank?.map((each) => {
-                return (
-                  <Bank
-                    name={each.name as string}
-                    number={each.number as number}
-                    type={each.type as string}
-                  />
-                );
-              })}
-            </div>
+        <div className="flex flex-col text-left">
+          <h1
+            onClick={
+              () =>
+                showModal({
+                  type: "custom",
+                  title: "Add New Bank",
+                  custom: AddBank,
+                  function: Addbanks,
+                })
+              // document.getelemen
+            }
+            className="text-blue-900 mx-auto w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center"
+          >
+            <GrAddCircle className="mt-1 mr-1 text-blue-900" color="blue" /> Add
+            A New Bank
+          </h1>
+          <div className="flexmb-2 mr-2 sm:mx-2">
+            {props.datas?.Bank?.map((each, pos) => {
+              return (
+                <Bank
+                  name={each.name as string}
+                  number={each.number as number}
+                  type={each.type as string}
+                  pos={pos}
+                  bank={props.datas!.Bank as []}
+                />
+              );
+            })}
           </div>
-        </h1>
+        </div>
       </div>
     </div>
   );

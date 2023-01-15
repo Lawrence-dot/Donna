@@ -15,6 +15,16 @@ export interface account {
   number: number;
 }
 
+export interface history {
+  type: string;
+  name: String;
+  card: string;
+  id: string;
+  status: string;
+  date: string;
+  amount?: number;
+}
+
 export type HomeType = {
   login: boolean;
   setlogin: (b: boolean) => void;
@@ -23,6 +33,7 @@ export type HomeType = {
 export type navtype = {
   open: boolean;
   setOpen: (b: boolean) => void;
+  fetchdata: () => void;
 };
 
 export type Apptype = {

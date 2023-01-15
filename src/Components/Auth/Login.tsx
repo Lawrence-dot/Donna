@@ -42,7 +42,10 @@ function Login() {
               // setDatas(dataval as dataType);
               navigate("/dashBoard", {
                 state: {
-                  data: dataval,
+                  data: {
+                    mail: `${mail.substring(0, mail.length - 10)}`,
+                    Username: dataval.Username,
+                  },
                 },
               });
             })();

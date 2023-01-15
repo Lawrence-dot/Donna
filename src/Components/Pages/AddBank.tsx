@@ -1,3 +1,7 @@
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { db } from "../../Firebase";
+import { showModal } from "./Modal";
+
 export const AddBank = `
 <div class="addbank mt-2 mx-3">
   <div class="flex flex-col text-sm">
@@ -9,7 +13,7 @@ export const AddBank = `
 </div>
 `;
 
-export function addbank() {
+export const Addbanks = async () => {
   const data = {
     name: (document.getElementById("name") as HTMLInputElement)!.value,
     number: Number(
@@ -17,5 +21,16 @@ export function addbank() {
     ),
     type: (document.getElementById("type") as HTMLInputElement)!.value,
   };
-  console.log(data);
-}
+
+  const dataref = doc(db, "Users", "damilareojediran3");
+  await updateDoc(dataref, { Bank: arrayUnion(data) })
+    .then(() => {
+      // navcontext?.fetchdata();
+    })
+    .catch((err) => {
+      showModal({
+        type: "ok",
+        title: err.message,
+      });
+    });
+};
