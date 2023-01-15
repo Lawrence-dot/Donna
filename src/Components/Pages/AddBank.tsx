@@ -13,7 +13,7 @@ export const AddBank = `
 </div>
 `;
 
-export const Addbanks = async () => {
+export const Addbanks = async (b: string) => {
   const data = {
     name: (document.getElementById("name") as HTMLInputElement)!.value,
     number: Number(

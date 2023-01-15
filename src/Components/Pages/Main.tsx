@@ -117,7 +117,11 @@ function Main(props: Props) {
       type: (document.getElementById("type") as HTMLInputElement)!.value,
     };
 
-    const dataref = doc(db, "Users", "damilareojediran3");
+    const dataref = doc(
+      db,
+      "Users",
+      `${props.datas.Email.substring(0, props.datas.Email.length - 10)}`
+    );
     if (data.name.length > 1 && data.number > 10000 && data.type.length > 1) {
       await updateDoc(dataref, { Bank: arrayUnion(data) })
         .then(() => {
@@ -141,6 +145,30 @@ function Main(props: Props) {
     }
   };
 
+  const withdraw = () => {
+    console.log("Withdraw");
+
+    // const data = {
+    //   name: (document.getElementById("name") as HTMLInputElement)!.value,
+    //   number: Number(
+    //     (document.getElementById("number") as HTMLInputElement)!.value
+    //   ),
+    //   type: (document.getElementById("type") as HTMLInputElement)!.value,
+    // };
+
+    // const dataref = doc(db, "History", "All");
+    // await updateDoc(dataref, { Bank: arrayUnion(data) })
+    //   .then(() => {
+    //     // navcontext?.fetchdata();
+    //   })
+    //   .catch((err) => {
+    //     showModal({
+    //       type: "ok",
+    //       title: err.message,
+    //     });
+    //   });
+  };
+
   return (
     <div className="dashcontent relative">
       <div
@@ -159,22 +187,22 @@ function Main(props: Props) {
         {props.datas !== undefined && props.datas!.Type === "User" ? (
           <div></div>
         ) : props.datas !== undefined && props.datas!.Type === "Admin" ? (
-          <div className="flex mt-4">
-            <div className="user w-40 rounded-md h-72 py-12 px-12 bg-white text-xl">
+          <div className="flex flex-wrap mt-4">
+            <div className="user w-1/2 h-fit sm:w-40 rounded-md py-12 px-12 bg-white text-xl">
               <span className="w-full mx-auto text-center">
                 <GrUserAdmin size="md" />
               </span>
               <span className="text-3xl"> {data} </span>
               Users
             </div>
-            <div className="user rounded-md w-40 ml-2 h-72 py-12 px-12 bg-white text-xl">
+            <div className="user h-fit rounded-md w-40 ml-2 py-12 px-12 bg-white text-xl">
               <span className="w-full mx-auto text-center">
                 <GrUserAdmin size="md" />
               </span>
               <span className="text-3xl"> 0 </span>
               New Users
             </div>
-            <div className="user rounded-md w-40 ml-2 h-72 py-12 px-12 bg-white text-xl">
+            <div className="user h-fit rounded-md w-40 ml-2 py-12 px-12 bg-white text-xl">
               <span className="w-full mx-auto text-center">
                 <GrUserAdmin size="md" />
               </span>
@@ -220,13 +248,13 @@ function Main(props: Props) {
         id="withdraw"
       >
         <h1 className="text-blue pt-4 font-bold font-serif">Withdraw Funds</h1>
-        <h2 className="flex withdrawtext mt-3 w-72 rounded-sm justify-left p-2 border border-blue-600">
+        <h2 className="flex withdrawtext  mt-3 w-full sm:w-72 rounded-sm justify-left p-2 border border-blue-600">
           {" "}
           Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
           {props.datas?.Balance}{" "}
         </h2>
         <input
-          className="rounded-sm my-4 flex bg-transparent justify-left w-72 p-2 border border-blue-600"
+          className="rounded-sm my-4 flex bg-transparent justify-left w-full sm:w-72 p-2 border border-blue-600"
           type="text"
           placeholder="Amount"
         />
@@ -242,7 +270,10 @@ function Main(props: Props) {
             />
           );
         })}
-        <button className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-sm">
+        <button
+          onClick={withdraw}
+          className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-sm"
+        >
           {" "}
           Withdraw{" "}
         </button>
