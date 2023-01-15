@@ -45,6 +45,7 @@ function Login() {
                   data: {
                     mail: `${mail.substring(0, mail.length - 10)}`,
                     Username: dataval.Username,
+                    Type: dataval.Type,
                   },
                 },
               });

@@ -17,6 +17,7 @@ import {
 import { db } from "../../Firebase";
 import { navContext } from "../Pages/Dasboard";
 import Status from "./Status";
+import Choose from "./Choose";
 
 interface Props {
   datas: dataType;
@@ -78,6 +79,35 @@ function Main(props: Props) {
     })();
   }, [props.datas?.Username]);
 
+  // const dash = async () => {
+  //   // if (props.datas?.Type === "User") {
+  //   //   return `<div></div>`;
+  //   // } else {
+  //   //   return `        <div className="flex mt-4">
+  //   //       <div className="user w-40 h-772 py-12 px-9 bg-white text-xl">
+  //   //         <span className="w-full mx-auto text-center">
+  //   //           <GrUserAdmin size="md" />
+  //   //         </span>
+  //   //         <span className="text-3xl"> {data} </span>
+  //   //         Users
+  //   //       </div>
+  //   //     </div>`;
+  //   // }
+  //   //     (props.datas?.Type) === "User" ? (
+  //   // <div></div>
+  //   //     ) : (
+  //   //       <div className="flex mt-4">
+  //   //         <div className="user w-40 h-772 py-12 px-9 bg-white text-xl">
+  //   //           <span className="w-full mx-auto text-center">
+  //   //             <GrUserAdmin size="md" />
+  //   //           </span>
+  //   //           <span className="text-3xl"> {data} </span>
+  //   //           Users
+  //   //         </div>
+  //   //       </div>
+  //   //     );
+  // };
+
   const Addbanks = async () => {
     const data = {
       name: (document.getElementById("name") as HTMLInputElement)!.value,
@@ -126,9 +156,9 @@ function Main(props: Props) {
           </div>
         </div>
 
-        {props.datas?.Type === "User" ? (
+        {props.datas !== undefined && props.datas!.Type === "User" ? (
           <div></div>
-        ) : (
+        ) : props.datas !== undefined && props.datas!.Type === "Admin" ? (
           <div className="flex mt-4">
             <div className="user w-40 h-772 py-12 px-9 bg-white text-xl">
               <span className="w-full mx-auto text-center">
@@ -138,6 +168,8 @@ function Main(props: Props) {
               Users
             </div>
           </div>
+        ) : (
+          <div> </div>
         )}
       </div>
 
@@ -162,7 +194,8 @@ function Main(props: Props) {
               card={each.card as string}
               type={each.card as string}
               status={each.status as string}
-              id={49494}
+              id={each.id as string}
+              date={each.date as string}
             />
           );
         })}
@@ -173,11 +206,32 @@ function Main(props: Props) {
         id="withdraw"
       >
         <h1 className="text-blue pt-4 font-bold font-serif">Withdraw Funds</h1>
-        <h2 className="flex withdrawtext justify-center">
+        <h2 className="flex withdrawtext mt-3 w-72 rounded-sm justify-left p-2 border border-blue-600">
           {" "}
           Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
           {props.datas?.Balance}{" "}
         </h2>
+        <input
+          className="rounded-sm my-4 flex bg-transparent justify-left w-72 p-2 border border-blue-600"
+          type="text"
+          placeholder="Amount"
+        />
+        {props.datas?.Bank?.map((each, id) => {
+          return (
+            <Choose
+              name={each.name as string}
+              number={each.number as number}
+              type={each.type as string}
+              pos={id}
+              bank={props.datas!.Bank as []}
+              key={id}
+            />
+          );
+        })}
+        <button className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-sm">
+          {" "}
+          Withdraw{" "}
+        </button>
       </div>
 
       <div

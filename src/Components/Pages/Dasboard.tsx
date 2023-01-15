@@ -22,7 +22,6 @@ function Dasboard() {
     const data = await getDoc(doc(db, "Users", `${location.state.data.mail}`));
     const dats = data.data();
     setDatas(dats as dataType);
-    
   };
 
   useEffect(() => {
@@ -31,7 +30,6 @@ function Dasboard() {
         doc(db, "Users", `${location.state.data.mail}`)
       );
       var dats = data.data();
-      console.log(location.state.data.mail);
       setDatas(dats as dataType);
     })();
     // console.log(dats);

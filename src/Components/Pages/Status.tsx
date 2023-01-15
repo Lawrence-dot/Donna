@@ -1,6 +1,6 @@
 interface Props {
   type: string;
-  id: number;
+  id: string;
   status: string;
   date?: string;
   card: string;

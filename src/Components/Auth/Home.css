@@ -208,6 +208,28 @@
   width: 98%;
 }
 
+.dashboardnav::before {
+  content: "";
+  background-size: 270px auto;
+  background-position: right 3.5rem;
+  -webkit-animation: .4s intro-devider-animation ease-in-out .33333s;
+  animation: .4s intro-devider-animation ease-in-out .33333s;
+    animation-delay: 0.33333s;
+    animation-fill-mode: none;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-delay: .3s;
+  animation-delay: .3s;
+  background-image: url("../../Assets/2.jpg");
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100vh;
+  width: 100%;
+  background-repeat: no-repeat;
+  opacity: 0;
+}
+
 @media (max-width: 639px) {
   .loginImage {
     padding: 15vh;
