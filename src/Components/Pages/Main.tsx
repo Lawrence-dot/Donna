@@ -17,7 +17,6 @@ import {
 import { db } from "../../Firebase";
 import { navContext } from "../Pages/Dasboard";
 import Status from "./Status";
-import { DataRouterStateContext } from "react-router/dist/lib/context";
 
 interface Props {
   datas: dataType;
@@ -43,11 +42,14 @@ function Main(props: Props) {
       "Dec",
     ];
     var d = new Date();
+    var hour = d.getHours();
     setInterval(() => {
       d = new Date();
+      hour = d.getHours();
+      hour > 12 && (hour = hour - 12);
     }, 1000);
-    return `${months[d.getDay() - 1]} ${d.getDate()} ${d.getFullYear()} ${
-      d.getHours() < 10 ? `0${d.getHours()}` : d.getHours()
+    return `${months[d.getMonth()]} ${d.getDate()} ${d.getFullYear()} ${
+      hour < 10 ? `0${hour}` : hour
     } : ${d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes()} ${
       d.getHours() > 12 ? "PM" : "AM"
     }`;
@@ -65,20 +67,16 @@ function Main(props: Props) {
   }, [props.datas?.Type]);
 
   useEffect(() => {
-    getrecords();
-    console.log(getrecords());
-  }, []);
-
-  const getrecords = async () => {
-    const dataref = doc(db, "History", "All");
-    const records = await getDoc(dataref);
-    var spliced = records.data()?.History;
-    var dara = spliced?.filter((item: history) => {
-      return (item.name = `${props.datas?.Username}`);
-    });
-    setHistory(dara as history[]);
-    console.log(dara);
-  };
+    (async () => {
+      const dataref = doc(db, "History", "All");
+      const records = await getDoc(dataref);
+      var spliced = records.data()?.History;
+      var dara = spliced?.filter((item: history) => {
+        return item.name === props.datas?.Username;
+      });
+      setHistory(dara as history[]);
+    })();
+  }, [props.datas?.Username]);
 
   const Addbanks = async () => {
     const data = {

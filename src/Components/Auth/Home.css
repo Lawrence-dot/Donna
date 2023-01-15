@@ -184,7 +184,8 @@
   background-image: url("../../Assets/2.jpg");
 }
 
-.addbank input, .addbank select  {
+.addbank input,
+.addbank select {
   border: 2px solid black;
   height: 30px;
   width: 100%;
@@ -197,8 +198,14 @@
   max-width: 70px;
 }
 
-#name:invalid, #number:invalid, #type:invalid {
-   border-color: red;
+#name:invalid,
+#number:invalid,
+#type:invalid {
+  border-color: red;
+}
+
+.wi-98 {
+  width: 98%;
 }
 
 @media (max-width: 639px) {
