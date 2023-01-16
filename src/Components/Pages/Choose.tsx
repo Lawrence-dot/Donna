@@ -15,18 +15,19 @@ function Choose(props: Props) {
   return (
     <div
       className={`w-full ${
-        active && "border border-blue"
-      } lg:w-1/2  mb-4 my-2  rounded-md text-left border bg-white`}
+        active && "border border-blue-900"
+      } md:w-1/2 lg:w-1/3 bankchoose  mb-4 my-2  rounded-md text-left border bg-white`}
+      onClick={() => setActive(!active)}
     >
       <div className="flex flex-col Z-50 py-1 pl-2 pr-2">
-        <span className="ml-auto cursor-pointer" onClick={() => {}}>
+        {/* <span className="ml-auto cursor-pointer" onClick={() => {}}>
           <input
             onClick={() => setActive(!active)}
             type="radio"
             name=""
             id=""
           />
-        </span>
+        </span> */}
         <div className="bankname flex">
           {" "}
           <CgCreditCard className="mt-1 mr-1" /> {props.type}{" "}
@@ -37,7 +38,7 @@ function Choose(props: Props) {
         </div>
         <div className="bankname">
           {" "}
-          <span className="mr-5"></span> {props.number} {props.name}
+          <span className="mr-5"></span> {props.name}
         </div>
       </div>
     </div>

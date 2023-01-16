@@ -3,7 +3,8 @@ interface Props {
   id: string;
   status: string;
   date?: string;
-  card: string;
+  card?: string;
+  name?: string;
 }
 
 function Status(props: Props) {
@@ -14,6 +15,7 @@ function Status(props: Props) {
         <div className="bankname"> Status: {props.status}</div>
         <div className="bankname"> Card: {props.card}</div>
         <div className="bankname"> Date: {props.date}</div>
+        {props.name && <div className="bankname">Name: {props.name}</div>}
       </div>
     </div>
   );

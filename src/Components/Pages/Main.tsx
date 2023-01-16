@@ -245,10 +245,32 @@ function Main(props: Props) {
 
       <div
         className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+        id="transacts"
+      >
+        <h1 className="text-blue pt-4 font-bold font-serif mb-2">
+          Transaction Status
+        </h1>
+
+        {history.map((each) => {
+          return (
+            <Status
+              card={each.card as string}
+              type={each.card as string}
+              status={each.status as string}
+              id={each.id as string}
+              date={each.date as string}
+              name={each.name as string}
+            />
+          );
+        })}
+      </div>
+
+      <div
+        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
         id="withdraw"
       >
         <h1 className="text-blue pt-4 font-bold font-serif">Withdraw Funds</h1>
-        <h2 className="flex withdrawtext  mt-3 w-full sm:w-72 rounded-sm justify-left p-2 border border-blue-600">
+        <h2 className="flex withdrawtext  mt-3 w-full text-center rounded-sm justify-center p-2 border border-blue-600">
           {" "}
           Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
           {props.datas?.Balance}{" "}
@@ -258,21 +280,24 @@ function Main(props: Props) {
           type="text"
           placeholder="Amount"
         />
-        {props.datas?.Bank?.map((each, id) => {
-          return (
-            <Choose
-              name={each.name as string}
-              number={each.number as number}
-              type={each.type as string}
-              pos={id}
-              bank={props.datas!.Bank as []}
-              key={id}
-            />
-          );
-        })}
+        <div className="flex">
+          {props.datas?.Bank?.map((each, id) => {
+            return (
+              <Choose
+                name={each.name as string}
+                number={each.number as number}
+                type={each.type as string}
+                pos={id}
+                bank={props.datas!.Bank as []}
+                key={id}
+              />
+            );
+          })}
+        </div>
+
         <button
           onClick={withdraw}
-          className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-sm"
+          className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-md"
         >
           {" "}
           Withdraw{" "}
