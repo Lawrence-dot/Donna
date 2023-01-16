@@ -1,4 +1,10 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, {
+  useEffect,
+  useContext,
+  useState,
+  RefObject,
+  useRef,
+} from "react";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { TbCurrencyNaira } from "react-icons/tb";
 import Bank from "./Bank";
@@ -25,6 +31,7 @@ interface Props {
 
 function Main(props: Props) {
   var [data, setData] = useState<number>();
+  const ammountref: RefObject<HTMLInputElement> = useRef(null);
   const [history, setHistory] = useState<history[]>([]);
   const navcontext = useContext(navContext);
 
@@ -79,35 +86,6 @@ function Main(props: Props) {
     })();
   }, [props.datas?.Username]);
 
-  // const dash = async () => {
-  //   // if (props.datas?.Type === "User") {
-  //   //   return `<div></div>`;
-  //   // } else {
-  //   //   return `        <div className="flex mt-4">
-  //   //       <div className="user w-40 h-772 py-12 px-9 bg-white text-xl">
-  //   //         <span className="w-full mx-auto text-center">
-  //   //           <GrUserAdmin size="md" />
-  //   //         </span>
-  //   //         <span className="text-3xl"> {data} </span>
-  //   //         Users
-  //   //       </div>
-  //   //     </div>`;
-  //   // }
-  //   //     (props.datas?.Type) === "User" ? (
-  //   // <div></div>
-  //   //     ) : (
-  //   //       <div className="flex mt-4">
-  //   //         <div className="user w-40 h-772 py-12 px-9 bg-white text-xl">
-  //   //           <span className="w-full mx-auto text-center">
-  //   //             <GrUserAdmin size="md" />
-  //   //           </span>
-  //   //           <span className="text-3xl"> {data} </span>
-  //   //           Users
-  //   //         </div>
-  //   //       </div>
-  //   //     );
-  // };
-
   const Addbanks = async () => {
     const data = {
       name: (document.getElementById("name") as HTMLInputElement)!.value,
@@ -145,8 +123,71 @@ function Main(props: Props) {
     }
   };
 
-  const withdraw = () => {
-    console.log("Withdraw");
+  const withdraw = async () => {
+    const amount = ammountref.current?.value;
+    const opts: Element[] = Array.from(
+      document.getElementsByClassName("bankchoose")
+    );
+    var opt = opts.filter((each) => {
+      return each.classList.contains("active");
+    });
+
+    if (opt.length === 1 && amount !== "" && amount !== null) {
+      if (props.datas.Balance >= Number(amount)) {
+        var pos: number = Number(opt[0].id);
+        var obj = {
+          bank: props.datas.Bank![pos],
+          amount: amount,
+          type: "withdraw",
+          name: props.datas.Username,
+          mail: props.datas.Email,
+          status: "Pending",
+          date: new Date().toDateString(),
+          id: "lsmcsclm",
+        };
+        const dataref = doc(
+          db,
+          "Users",
+          `${props.datas.Email.substring(0, props.datas.Email.length - 10)}`
+        );
+
+        const href = doc(db, "History", "All");
+
+        await updateDoc(href, { History: arrayUnion(obj) })
+          .then(async () => {
+            const newbal = props.datas.Balance - Number(amount);
+            await updateDoc(dataref, { Balance: newbal })
+              .then(() => {
+                showModal({
+                  type: "ok",
+                  title: "Withdrawal is being Processed",
+                });
+              })
+              .catch((err) => {
+                showModal({
+                  type: "ok",
+                  title: err.message,
+                });
+              });
+          })
+          .catch((err) => {
+            showModal({
+              type: "ok",
+              title: err.message,
+            });
+          });
+      } else {
+        showModal({
+          type: "ok",
+          title: "Insufficient Funds",
+        });
+      }
+    } else {
+      showModal({
+        type: "ok",
+        title: "Please Fill all Fields (Select Only One Bank)",
+      });
+    }
 
     // const data = {
     //   name: (document.getElementById("name") as HTMLInputElement)!.value,
@@ -155,18 +196,6 @@ function Main(props: Props) {
     //   ),
     //   type: (document.getElementById("type") as HTMLInputElement)!.value,
     // };
-
-    // const dataref = doc(db, "History", "All");
-    // await updateDoc(dataref, { Bank: arrayUnion(data) })
-    //   .then(() => {
-    //     // navcontext?.fetchdata();
-    //   })
-    //   .catch((err) => {
-    //     showModal({
-    //       type: "ok",
-    //       title: err.message,
-    //     });
-    //   });
   };
 
   return (
@@ -238,6 +267,7 @@ function Main(props: Props) {
               status={each.status as string}
               id={each.id as string}
               date={each.date as string}
+              amount={each.amount}
             />
           );
         })}
@@ -245,10 +275,10 @@ function Main(props: Props) {
 
       <div
         className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="transacts"
+        id="atransact"
       >
-        <h1 className="text-blue pt-4 font-bold font-serif mb-2">
-          Transaction Status
+        <h1 className="text-blue-800 pt-4 font-bold font-serif mb-2">
+          Transaction Statuss
         </h1>
 
         {history.map((each) => {
@@ -260,6 +290,7 @@ function Main(props: Props) {
               id={each.id as string}
               date={each.date as string}
               name={each.name as string}
+              amount={each.amount as number}
             />
           );
         })}
@@ -270,15 +301,17 @@ function Main(props: Props) {
         id="withdraw"
       >
         <h1 className="text-blue pt-4 font-bold font-serif">Withdraw Funds</h1>
-        <h2 className="flex withdrawtext  mt-3 w-full text-center rounded-sm justify-center p-2 border border-blue-600">
+        <h2 className="flex withdrawtext  mt-3 w-full text-center rounded-sm justify-center p-2 bg-white">
           {" "}
           Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
           {props.datas?.Balance}{" "}
         </h2>
         <input
-          className="rounded-sm my-4 flex bg-transparent justify-left w-full sm:w-72 p-2 border border-blue-600"
+          className="rounded-md my-4 flexjustify-center mx-auto bg-white w-full sm:w-72 p-2"
           type="text"
-          placeholder="Amount"
+          placeholder="Amount to Withdraw"
+          id="wamount"
+          ref={ammountref}
         />
         <div className="flex">
           {props.datas?.Bank?.map((each, id) => {

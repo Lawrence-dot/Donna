@@ -34,6 +34,7 @@ function Navbar(props: { type: string }) {
       "withdraw",
       "records",
       "user",
+      "atransact",
     ];
 
     if (classNames.includes(e.target?.id)) {
@@ -175,7 +176,7 @@ function Navbar(props: { type: string }) {
               </div>
 
               <div
-                id="transacts"
+                id="transact"
                 onClick={switchNav}
                 className="navli px-4 cursor-pointer border border-blue-900 hover:border-blue-700 hover:bg-blue-900 py-2 md:text-lg text-md  font-thin font-sans rounded-md flex"
               >

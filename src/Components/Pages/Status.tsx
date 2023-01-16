@@ -1,3 +1,5 @@
+import { TbCurrencyNaira } from "react-icons/tb";
+
 interface Props {
   type: string;
   id: string;
@@ -5,6 +7,8 @@ interface Props {
   date?: string;
   card?: string;
   name?: string;
+  mail?: string;
+  amount?: number;
 }
 
 function Status(props: Props) {
@@ -16,6 +20,13 @@ function Status(props: Props) {
         <div className="bankname"> Card: {props.card}</div>
         <div className="bankname"> Date: {props.date}</div>
         {props.name && <div className="bankname">Name: {props.name}</div>}
+        {props.amount && (
+          <div className="bankname flex">
+            Amount: <TbCurrencyNaira className="mt-1" color="black" />{" "}
+            {props.amount}
+          </div>
+        )}
+        {props.mail && <div className="bankname">Mail: {props.mail}</div>}
       </div>
     </div>
   );

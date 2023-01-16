@@ -23,6 +23,8 @@ export interface history {
   status: string;
   date: string;
   amount?: number;
+  mail?: string;
+  bank?: account;
 }
 
 export type HomeType = {
