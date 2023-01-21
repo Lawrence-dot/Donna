@@ -208,10 +208,13 @@
   width: 98%;
 }
 
-/* .dashboardnav::before {
+.dashboardnav {
+  width: 17rem;
+}
+
+.dashboardnav::after {
   content: "";
-  background-size: 270px auto;
-  background-position: right 3.5rem;
+  background-size: cover;
   -webkit-animation: .4s intro-devider-animation ease-in-out .33333s;
   animation: .4s intro-devider-animation ease-in-out .33333s;
     animation-delay: 0.33333s;
@@ -227,8 +230,9 @@
   height: 100vh;
   width: 100%;
   background-repeat: no-repeat;
-  opacity: 0;
-} */
+  opacity: .4;
+  z-index: -9;
+}
 
 @media (max-width: 639px) {
   .loginImage {

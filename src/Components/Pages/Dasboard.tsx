@@ -1,40 +1,64 @@
-import React, { useEffect, createContext } from "react";
+import React, { useEffect, createContext, useCallback } from "react";
 import { useLocation } from "react-router";
 import { dataType } from "../../Interfaces/interfaces";
 import { useState } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { CgMenuBoxed, CgCloseR } from "react-icons/cg";
+import { CgMenuBoxed, CgCloseR, CgNotifications, CgMoon } from "react-icons/cg";
 import Navbar from "./Navbar";
 import { navtype } from "../../Interfaces/interfaces";
 import { showModal } from "./Modal";
 import Main from "./Main";
 import { db } from "../../Firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { TbSettings } from "react-icons/tb";
 
 export const navContext = createContext<navtype | null>(null);
 
 function Dasboard() {
   const [datas, setDatas] = useState<dataType>();
+  // const [history, setHistory] = useState<history[]>();
   const [open, setOpen] = useState<boolean>(false);
   const location = useLocation();
 
-  const fetchdata = async () => {
+  // useEffect(() => {
+  //   (async () => {
+  //     const dataref = doc(db, "History", "All");
+  //     const records = await getDoc(dataref);
+  //     var spliced = records.data()?.History;
+  //     var dara = spliced?.filter((item: history) => {
+  //       return item.name === props.datas?.Username;
+  //     });
+  //     setHistory(dara as history[]);
+  //   })();
+  // }, [props.datas?.Username]);
+
+  // const fetchdat = async () => {
+  //   const data = await getDoc(doc(db, "Users", `${location.state.data.mail}`));
+  //   const dats = data.data();
+  //   setDatas(dats as dataType);
+  // };
+
+  const fetchdata = useCallback(async () => {
     const data = await getDoc(doc(db, "Users", `${location.state.data.mail}`));
     const dats = data.data();
     setDatas(dats as dataType);
-  };
+  }, [location.state.data.mail]);
 
   useEffect(() => {
-    (async () => {
-      const data = await getDoc(
-        doc(db, "Users", `${location.state.data.mail}`)
-      );
-      var dats = data.data();
-      setDatas(dats as dataType);
+    // (async () => {
+    //   const data = await getDoc(
+    //     doc(db, "Users", `${location.state.data.mail}`)
+    //   );
+    //   var dats = data.data();
+    //   setDatas(dats as dataType);
+    // })();
+    (() => {
+      fetchdata();
     })();
+
     // console.log(dats);
     window.innerWidth > 639 ? setOpen(true) : setOpen(false);
-  }, [location.state.data.mail]);
+  }, [fetchdata]);
 
   useEffect(() => {
     showModal({
@@ -85,6 +109,18 @@ function Dasboard() {
                 ) : (
                   <CgMenuBoxed color="white" />
                 )}{" "}
+              </span>
+
+              <span className="text-2xl">
+                <CgNotifications color="white" height="20px" />
+              </span>
+
+              <span className="text-2xl ml-1">
+                <TbSettings color="white" />
+              </span>
+
+              <span className="text-2xl ml-1">
+                <CgMoon color="white" />
               </span>
             </div>
 

@@ -30,10 +30,11 @@ interface Props {
 }
 
 function Main(props: Props) {
-  var [data, setData] = useState<number>();
+  const [data, setData] = useState<number>();
   const ammountref: RefObject<HTMLInputElement> = useRef(null);
   const [history, setHistory] = useState<history[]>([]);
   const navcontext = useContext(navContext);
+  // var dashcontent = useContext()
 
   const getDate = () => {
     var months = [
@@ -68,23 +69,42 @@ function Main(props: Props) {
       const dataref = collection(db, "Users");
       const datas = await getDocs(dataref);
       const ext = datas.docs;
-      setData(ext.length as number);
+      setData((ext.length - 1) as number);
     };
-
-    props.datas?.Type === "Admin" && fetchUser();
+    fetchUser();
   }, [props.datas?.Type]);
+
+  // useEffect(() => {
+  //   const fetchHistory = async () => {
+  //     const dataref = doc(db, "History", "All");
+  //     const records = await getDoc(dataref);
+  //     var spliced = records.data()?.History;
+  //     var dara = spliced?.filter((item: history) => {
+  //       return item.name === props.datas?.Username;
+  //     });
+  //     setHistory(dara as history[]);
+  //   };
+  //   console.log(props.datas.Type === "Admin");
+
+  //   props.datas.Type === "Admin" && fetchHistory();
+  // }, [props.datas?.Type]);
 
   useEffect(() => {
     (async () => {
+      var dara;
       const dataref = doc(db, "History", "All");
       const records = await getDoc(dataref);
       var spliced = records.data()?.History;
-      var dara = spliced?.filter((item: history) => {
-        return item.name === props.datas?.Username;
-      });
-      setHistory(dara as history[]);
+      if (props.datas.Type !== "Admin") {
+        dara = spliced?.filter((item: history) => {
+          return item.name === props.datas?.Username;
+        });
+        setHistory(dara as history[]);
+      } else {
+        setHistory(spliced as history[]);
+      }
     })();
-  }, [props.datas?.Username]);
+  }, [props.datas]);
 
   const Addbanks = async () => {
     const data = {
@@ -158,6 +178,16 @@ function Main(props: Props) {
             const newbal = props.datas.Balance - Number(amount);
             await updateDoc(dataref, { Balance: newbal })
               .then(() => {
+                navcontext?.fetchdata();
+                (async () => {
+                  const dataref = doc(db, "History", "All");
+                  const records = await getDoc(dataref);
+                  var spliced = records.data()?.History;
+                  var dara = spliced?.filter((item: history) => {
+                    return item.name === props.datas?.Username;
+                  });
+                  setHistory(dara as history[]);
+                })();
                 showModal({
                   type: "ok",
                   title: "Withdrawal is being Processed",
@@ -231,13 +261,6 @@ function Main(props: Props) {
               <span className="text-3xl"> 0 </span>
               New Users
             </div>
-            <div className="user h-fit rounded-md w-40 ml-2 py-12 px-12 bg-white text-xl">
-              <span className="w-full mx-auto text-center">
-                <GrUserAdmin size="md" />
-              </span>
-              <span className="text-3xl"> 1 </span>
-              Admin User
-            </div>
           </div>
         ) : (
           <div> </div>
@@ -259,7 +282,7 @@ function Main(props: Props) {
           Transaction Status
         </h1>
 
-        {history.map((each) => {
+        {history.map((each, id) => {
           return (
             <Status
               card={each.card as string}
@@ -268,6 +291,7 @@ function Main(props: Props) {
               id={each.id as string}
               date={each.date as string}
               amount={each.amount}
+              key={id}
             />
           );
         })}
@@ -281,19 +305,21 @@ function Main(props: Props) {
           Transaction Statuss
         </h1>
 
-        {history.map((each) => {
-          return (
-            <Status
-              card={each.card as string}
-              type={each.card as string}
-              status={each.status as string}
-              id={each.id as string}
-              date={each.date as string}
-              name={each.name as string}
-              amount={each.amount as number}
-            />
-          );
-        })}
+        <div>
+          {history.map((each) => {
+            return (
+              <Status
+                type={each.card as string}
+                status={each.status as string}
+                id={each.id as string}
+                date={each.date as string}
+                amount={each.amount}
+                name={each.name as string}
+                mail={each.mail}
+              />
+            );
+          })}
+        </div>
       </div>
 
       <div
@@ -307,7 +333,7 @@ function Main(props: Props) {
           {props.datas?.Balance}{" "}
         </h2>
         <input
-          className="rounded-md my-4 flexjustify-center mx-auto bg-white w-full sm:w-72 p-2"
+          className="rounded-md my-4 flex justify-center mx-auto bg-white w-full sm:w-72 p-2"
           type="text"
           placeholder="Amount to Withdraw"
           id="wamount"
@@ -329,7 +355,13 @@ function Main(props: Props) {
         </div>
 
         <button
-          onClick={withdraw}
+          onClick={() =>
+            showModal({
+              type: "yesno",
+              title: `Are You Sure You Want To Withdraw &#8358;${ammountref.current?.value}`,
+              function: withdraw,
+            })
+          }
           className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-md"
         >
           {" "}
@@ -341,8 +373,10 @@ function Main(props: Props) {
         className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
         id="records"
       >
-        <h1 className="text-blue pt-4 font-bold font-serif">General Records</h1>
-        <table className="mx-auto flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
+        <h1 className="text-blue-700 pt-4 font-bold font-serif">
+          General Records
+        </h1>
+        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
           <thead>
             <tr className="bg-blue-800 rounded-md">
               <th className="px-3 font-semibold text-lg text-white"> S/N </th>
@@ -360,9 +394,104 @@ function Main(props: Props) {
               </th>
               <th className="px-3 font-semibold text-lg text-white">
                 {" "}
+                Amount{" "}
+              </th>
+              <th className="px-3 font-semibold text-lg text-white">
+                {" "}
                 Transaction Status{" "}
               </th>
             </tr>
+
+            {history.map((each, index) => {
+              return (
+                <tr className="bg-white py-5">
+                  <td style={{ padding: "10px 0" }}> {index + 1} </td>
+                  <td style={{ padding: "10px 0" }}> {each.date} </td>
+                  <td style={{ padding: "10px 0" }}> {each.id} </td>
+                  <td style={{ padding: "10px 0" }}> {each.type} </td>
+                  <td style={{ padding: "10px 0" }}> &#8358;{each.amount} </td>
+                  <td style={{ padding: "10px 0" }}>
+                    {" "}
+                    <span
+                      className={`${
+                        each.status === "Pending"
+                          ? "text-red-700 bg-red-200 "
+                          : "text-green-900 bg-green-200"
+                      }  py-2 px-3 rounded-md`}
+                    >
+                      {" "}
+                      {each.status}
+                    </span>{" "}
+                  </td>
+                </tr>
+              );
+            })}
+          </thead>
+        </table>
+      </div>
+
+      <div
+        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+        id="arecords"
+      >
+        <h1 className="text-blue-700 pt-4 font-bold font-serif">
+          General Records
+        </h1>
+        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
+          <thead>
+            <tr className="bg-blue-800 rounded-md">
+              <th className="px-3 font-semibold text-lg text-white"> S/N </th>
+              <th className="px-3 font-semibold text-lg text-white">
+                {" "}
+                Transaction Date{" "}
+              </th>
+              <th className="px-3 font-semibold text-lg text-white">
+                {" "}
+                Transaction Id{" "}
+              </th>
+              <th className="px-3 font-semibold text-lg text-white">
+                {" "}
+                Transaction Type{" "}
+              </th>
+              <th className="px-3 font-semibold text-lg text-white">
+                {" "}
+                User Name{" "}
+              </th>
+              <th className="px-3 font-semibold text-lg text-white">
+                {" "}
+                Amount{" "}
+              </th>
+              <th className="px-3 font-semibold text-lg text-white">
+                {" "}
+                Transaction Status{" "}
+              </th>
+            </tr>
+
+            {history.map((each, index) => {
+              return (
+                <tr className="bg-white py-5">
+                  <td style={{ padding: "10px 0" }}> {index + 1} </td>
+                  <td style={{ padding: "10px 0" }}> {each.date} </td>
+                  <td style={{ padding: "10px 0" }}> {each.id} </td>
+                  <td style={{ padding: "10px 0" }}> {each.type} </td>
+                  <td style={{ padding: "10px 0" }}> {each.name} </td>
+                  <td style={{ padding: "10px 0" }}> &#8358;{each.amount} </td>
+                  <td style={{ padding: "10px 0" }}>
+                    {" "}
+                    <span
+                      className={`${
+                        each.status === "Pending"
+                          ? "text-red-700 bg-red-200 "
+                          : "text-green-900 bg-green-200"
+                      }  py-2 px-3 rounded-md`}
+                    >
+                      {" "}
+                      {each.status}
+                    </span>{" "}
+                  </td>
+                </tr>
+              );
+            })}
           </thead>
         </table>
       </div>
@@ -408,34 +537,48 @@ function Main(props: Props) {
         id="user"
       >
         <div className="flex flex-col text-left">
-          <h1
-            onClick={
-              () =>
-                showModal({
-                  type: "custom",
-                  title: "Add New Bank",
-                  custom: AddBank,
-                  function: Addbanks,
-                })
-              // document.getelemen
-            }
-            className="text-blue-900 mx-auto w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center"
-          >
-            <GrAddCircle className="mt-1 mr-1 text-blue-900" color="blue" /> Add
-            A New Bank
+          <h1 className="text-blue-900 mx-auto w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center">
+            User Information
           </h1>
           <div className="flexmb-2 mr-2 sm:mx-2">
-            {props.datas?.Bank?.map((each, pos) => {
-              return (
-                <Bank
-                  name={each.name as string}
-                  number={each.number as number}
-                  type={each.type as string}
-                  pos={pos}
-                  bank={props.datas!.Bank as []}
-                />
-              );
-            })}
+            <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
+              <thead>
+                <tr className="bg-blue-800 rounded-md">
+                  <th className="px-3 font-semibold text-lg text-white">
+                    {" "}
+                    S/N{" "}
+                  </th>
+                  <th className="px-3 font-semibold text-lg text-white">
+                    {" "}
+                    Username{" "}
+                  </th>
+                  <th className="px-3 font-semibold text-lg text-white">
+                    {" "}
+                    User Email{" "}
+                  </th>
+                  <th className="px-3 font-semibold text-lg text-white">
+                    {" "}
+                    Total Transaction{" "}
+                  </th>
+                  <th className="px-3 font-semibold text-lg text-white">
+                    {" "}
+                    User Status{" "}
+                  </th>
+                </tr>
+                {/* 
+                {data?.map((each, index) => {
+                  return (
+                    <tr>
+                      <td> {index} </td>
+                      <td> {each.date} </td>
+                      <td> {each.id} </td>
+                      <td> {each.type} </td>
+                      <td> {each.status} </td>
+                    </tr>
+                  );
+                })} */}
+              </thead>
+            </table>
           </div>
         </div>
       </div>

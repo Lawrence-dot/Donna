@@ -33,6 +33,7 @@ function Navbar(props: { type: string }) {
       "dashboard",
       "withdraw",
       "records",
+      "arecords",
       "user",
       "atransact",
     ];
@@ -176,18 +177,18 @@ function Navbar(props: { type: string }) {
               </div>
 
               <div
-                id="transact"
+                id="atransact"
                 onClick={switchNav}
                 className="navli px-4 cursor-pointer border border-blue-900 hover:border-blue-700 hover:bg-blue-900 py-2 md:text-lg text-md  font-thin font-sans rounded-md flex"
               >
                 <span className="mt-1">
                   <AiOutlineUser />
                 </span>
-                <span className="ml-1 font-semibold"> Transaction Status</span>
+                <span className="ml-1 font-semibold"> Transactions </span>
               </div>
 
               <div
-                id="records"
+                id="arecords"
                 onClick={switchNav}
                 className="navli px-4 cursor-pointer border border-blue-900 hover:border-blue-700 hover:bg-blue-900 py-2 md:text-lg text-md placeholder:font-thin font-sans rounded-md flex"
               >
@@ -196,6 +197,7 @@ function Navbar(props: { type: string }) {
                 </span>
                 <span className="ml-1 font-semibold"> General Records</span>
               </div>
+
               <div
                 id="user"
                 onClick={switchNav}
