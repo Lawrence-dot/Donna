@@ -119,6 +119,7 @@
   border-radius: 1.6rem;
 }
 
+
 .contentmain::before {
   content: "";
   width: 96.5%;
@@ -208,9 +209,12 @@
   width: 98%;
 }
 
+/* .md:bloc */
+
 .dashboardnav {
   width: 17rem;
 }
+
 
 .dashboardnav::after {
   content: "";
@@ -234,10 +238,28 @@
   z-index: -9;
 }
 
+@media (max-width: 767px) {
+  .loginImage {
+    padding: 15vh;
+    min-width: 100vw;
+  }
+
+  .hiden {
+    display: none;
+  }
+
+
+}
+
+
 @media (max-width: 639px) {
   .loginImage {
     padding: 15vh;
     min-width: 100vw;
+  }
+
+  .hiden {
+    display: none;
   }
 
   .loginForm {

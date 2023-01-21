@@ -111,15 +111,15 @@ function Dasboard() {
                 )}{" "}
               </span>
 
-              <span className="text-2xl">
+              <span className="hiden text-2xl">
                 <CgNotifications color="white" height="20px" />
               </span>
 
-              <span className="text-2xl ml-1">
+              <span className="hiden text-2xl ml-1">
                 <TbSettings color="white" />
               </span>
 
-              <span className="text-2xl ml-1">
+              <span className="text-2xl hiden ml-1">
                 <CgMoon color="white" />
               </span>
             </div>
