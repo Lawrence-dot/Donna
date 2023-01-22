@@ -85,7 +85,14 @@
   background-repeat: no-repeat;
   opacity: .4;
   /* z-index: -9; */
-  height: 106vh;
+  height: 106.1vh;
+}
+
+@media (max-width: 767px) {
+  .dashBoard::before {
+    height: 107.2vh;
+  }
+  
 }
 
 @media (max-width: 639px) {

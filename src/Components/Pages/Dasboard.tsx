@@ -16,27 +16,8 @@ export const navContext = createContext<navtype | null>(null);
 
 function Dasboard() {
   const [datas, setDatas] = useState<dataType>();
-  // const [history, setHistory] = useState<history[]>();
   const [open, setOpen] = useState<boolean>(false);
   const location = useLocation();
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const dataref = doc(db, "History", "All");
-  //     const records = await getDoc(dataref);
-  //     var spliced = records.data()?.History;
-  //     var dara = spliced?.filter((item: history) => {
-  //       return item.name === props.datas?.Username;
-  //     });
-  //     setHistory(dara as history[]);
-  //   })();
-  // }, [props.datas?.Username]);
-
-  // const fetchdat = async () => {
-  //   const data = await getDoc(doc(db, "Users", `${location.state.data.mail}`));
-  //   const dats = data.data();
-  //   setDatas(dats as dataType);
-  // };
 
   const fetchdata = useCallback(async () => {
     const data = await getDoc(doc(db, "Users", `${location.state.data.mail}`));
@@ -45,18 +26,9 @@ function Dasboard() {
   }, [location.state.data.mail]);
 
   useEffect(() => {
-    // (async () => {
-    //   const data = await getDoc(
-    //     doc(db, "Users", `${location.state.data.mail}`)
-    //   );
-    //   var dats = data.data();
-    //   setDatas(dats as dataType);
-    // })();
     (() => {
       fetchdata();
     })();
-
-    // console.log(dats);
     window.innerWidth > 639 ? setOpen(true) : setOpen(false);
   }, [fetchdata]);
 

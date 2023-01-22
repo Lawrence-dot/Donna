@@ -34,7 +34,6 @@ function Main(props: Props) {
   const ammountref: RefObject<HTMLInputElement> = useRef(null);
   const [history, setHistory] = useState<history[]>([]);
   const navcontext = useContext(navContext);
-  // var dashcontent = useContext()
 
   const getDate = () => {
     var months = [
@@ -74,20 +73,6 @@ function Main(props: Props) {
     fetchUser();
   }, [props.datas?.Type]);
 
-  // useEffect(() => {
-  //   const fetchHistory = async () => {
-  //     const dataref = doc(db, "History", "All");
-  //     const records = await getDoc(dataref);
-  //     var spliced = records.data()?.History;
-  //     var dara = spliced?.filter((item: history) => {
-  //       return item.name === props.datas?.Username;
-  //     });
-  //     setHistory(dara as history[]);
-  //   };
-  //   console.log(props.datas.Type === "Admin");
-
-  //   props.datas.Type === "Admin" && fetchHistory();
-  // }, [props.datas?.Type]);
 
   useEffect(() => {
     (async () => {
@@ -218,14 +203,6 @@ function Main(props: Props) {
         title: "Please Fill all Fields (Select Only One Bank)",
       });
     }
-
-    // const data = {
-    //   name: (document.getElementById("name") as HTMLInputElement)!.value,
-    //   number: Number(
-    //     (document.getElementById("number") as HTMLInputElement)!.value
-    //   ),
-    //   type: (document.getElementById("type") as HTMLInputElement)!.value,
-    // };
   };
 
   return (
@@ -272,6 +249,25 @@ function Main(props: Props) {
         id="sell"
       >
         <h1 className="text-blue pt-4 font-bold font-serif">Sell A Giftcard</h1>
+        <div className="sellcar mt-4 flex">
+          <div className="w-28 border border-none border-left">
+            <ul className="font-bold">
+              <li className="py-3"> Steam </li>
+              <li className="py-3"> Google Play </li>
+              <li className="py-2"> Verizon </li>
+              <li className="py-3"> Card 4</li>
+              <li className="py-3"> Card 5</li>
+              <li className="py-3"> Card 6</li>
+              <li className="py-3"> Card 7</li>
+              <li className="py-3"> Card 8</li>
+              <li className="py-3"> Card 9</li>
+              <li className="py-3"> Card 10</li>
+            </ul>
+          </div>
+          <div className="w-full cardinfo">
+            <h1> Steam Card</h1>
+          </div>
+        </div>
       </div>
 
       <div
@@ -306,7 +302,7 @@ function Main(props: Props) {
         </h1>
 
         <div>
-          {history.map((each) => {
+          {history.map((each, index) => {
             return (
               <Status
                 type={each.card as string}
@@ -316,6 +312,7 @@ function Main(props: Props) {
                 amount={each.amount}
                 name={each.name as string}
                 mail={each.mail}
+                key={index}
               />
             );
           })}
@@ -376,7 +373,7 @@ function Main(props: Props) {
         <h1 className="text-blue-700 pt-4 font-bold font-serif">
           General Records
         </h1>
-        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
+        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-scroll rounded-md mt-3">
           <thead>
             <tr className="bg-blue-800 rounded-md">
               <th className="px-3 font-semibold text-lg text-white"> S/N </th>
@@ -437,7 +434,7 @@ function Main(props: Props) {
         <h1 className="text-blue-700 pt-4 font-bold font-serif">
           General Records
         </h1>
-        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
+        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-scroll rounded-md mt-3">
           <thead>
             <tr className="bg-blue-800 rounded-md">
               <th className="px-3 font-semibold text-lg text-white"> S/N </th>

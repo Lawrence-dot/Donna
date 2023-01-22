@@ -1,4 +1,5 @@
 import { TbCurrencyNaira } from "react-icons/tb";
+import { useNavigate } from "react-router";
 
 interface Props {
   type: string;
@@ -12,11 +13,27 @@ interface Props {
 }
 
 function Status(props: Props) {
+  const navigate = useNavigate();
+  const opentrans = () => {
+    navigate("/trans", {
+      state: {
+        type: props.type,
+        id: props.id,
+        status: props.status,
+        date: props.date,
+        card: props.card,
+        name: props.name,
+        mail: props.mail,
+        amount: props.amount,
+      },
+    });
+  };
   return (
     <div
-      className={`wi-98 ${
+      className={`wi-98 cursor-pointer ${
         props.status === "Pending" ? "border-red-900" : "border-green-900"
       } bg-white lg:w-1/2 mb-4 mr-2 sm:mx-2  rounded-md text-left border`}
+      onClick={() => opentrans()}
     >
       <div className="flex flex-col ml-2 Z-50 py-3 pl-1 pr-2">
         <div className="bankname"> Transaction Id: {props.id}</div>
