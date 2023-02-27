@@ -324,9 +324,9 @@ function Main(props: Props) {
             <span className="text-left"> Need wait time: 5mins </span>
             <br />
             <hr />
-            <ol className="text-left">
-              <li> No Limit for domination</li>
-              <li> Upload Clear Pictures </li>
+            <ol className="text-left mt-2">
+              <li> 1. No Limit for domination</li>
+              <li> 2. Upload Clear Pictures </li>
             </ol>
           </div>
 
@@ -334,11 +334,14 @@ function Main(props: Props) {
             <h2 className="text-left mb-2"> Upload Images</h2>
             <input type="file" accept="image/png image/jpg" />
             <p> Total Amount:</p>
-            <p className="w-20 bg-transparent border mt-2 px-2">
+            <p className="w-fit bg-transparent border mt-2 px-2">
               {" "}
               Rate x Total Amount
             </p>
-            <button className="bg-blue-799 px-2"> Submit</button>
+            <button className="bg-blue-700 hover:bg-blue-500 px-3 py-1 w-fit mx-auto mt-3 text-white rounded-md">
+              {" "}
+              Submit
+            </button>
           </div>
         </div>
 
