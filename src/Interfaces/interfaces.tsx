@@ -15,6 +15,13 @@ export interface account {
   number: number;
 }
 
+export interface gifttype {
+  need: string;
+  name: String;
+  rate: number;
+  country: { name: string; rate: number; need: string }[];
+}
+
 export interface history {
   type: string;
   name: String;

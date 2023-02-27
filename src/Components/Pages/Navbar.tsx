@@ -15,6 +15,19 @@ import {
 import { showModal } from "./Modal";
 import { useNavigate } from "react-router";
 
+export const classNames: string[] = [
+  "bank",
+  "sell",
+  "transact",
+  "dashboard",
+  "withdraw",
+  "records",
+  "arecords",
+  "user",
+  "atransact",
+  "sellpage",
+];
+
 function Navbar(props: { type: string }) {
   const navcontext = useContext<navtype | null>(navContext);
   const showPreloader = useContext<Apptype | null>(AppContext);
@@ -24,19 +37,6 @@ function Navbar(props: { type: string }) {
     const docs: Element[] = Array.from(
       document.getElementsByClassName("contentmain")
     );
-    console.log("Kolier");
-
-    const classNames: string[] = [
-      "bank",
-      "sell",
-      "transact",
-      "dashboard",
-      "withdraw",
-      "records",
-      "arecords",
-      "user",
-      "atransact",
-    ];
 
     if (classNames.includes(e.target?.id)) {
       docs.forEach((each, index) => {

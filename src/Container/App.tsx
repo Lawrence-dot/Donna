@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dasboard from "../Components/Pages/Dasboard";
 import Home from "../Components/Auth/Home";
 import { Apptype } from "../Interfaces/interfaces";
-import Trans from "../Components/Pages/Trans";
 
 export const AppContext = createContext<Apptype | null>(null);
 
@@ -41,7 +40,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/dashBoard" element={<Dasboard />} />
-            <Route path="/trans" element={<Trans />} />
           </Routes>
         </BrowserRouter>
       </div>

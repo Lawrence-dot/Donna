@@ -51,6 +51,7 @@ function Login() {
               });
             })();
           } catch (error) {
+            setLoading(false);
             showModal({
               title: `${error}`,
               type: "ok",
@@ -85,8 +86,12 @@ function Login() {
           passref.current!.focus();
           setLoading(false);
           setLoaded(true);
+          setTimeout(() => {
+            setLoaded(false);
+          }, 2000);
         });
     } else {
+      setLoaded(false);
       showModal({
         title: "Please Fill all input fields",
         type: "ok",

@@ -4,6 +4,7 @@ import React, {
   useState,
   RefObject,
   useRef,
+  createContext,
 } from "react";
 import { AiOutlineCalendar } from "react-icons/ai";
 import { TbCurrencyNaira } from "react-icons/tb";
@@ -24,16 +25,40 @@ import { db } from "../../Firebase";
 import { navContext } from "../Pages/Dasboard";
 import Status from "./Status";
 import Choose from "./Choose";
+import { CgArrowLeft } from "react-icons/cg";
+import { Box, Tab } from "@mui/material";
+import { TabPanel, TabList, TabContext } from "@mui/lab";
+import Card from "../Pages/Card";
+import { gifttype } from "../../Interfaces/interfaces";
 
 interface Props {
   datas: dataType;
 }
+
+export interface crdinfo {
+  name?: string;
+  type: string;
+  need: string;
+  rate: number;
+}
+
+export interface mainType {
+  crddetails: crdinfo | null;
+  setcrddetails: (c: crdinfo) => void;
+}
+
+export const MainContext = createContext<mainType | null>(null);
 
 function Main(props: Props) {
   const [data, setData] = useState<number>();
   const ammountref: RefObject<HTMLInputElement> = useRef(null);
   const [history, setHistory] = useState<history[]>([]);
   const navcontext = useContext(navContext);
+  const [crdval, setcrdval] = useState<string>("1");
+  const [currentcrd, setcurrentcrd] = useState<string>("Steam");
+  const [selnav, setselnav] = useState<string>("1");
+  const [utils, setUtils] = useState<gifttype[]>([]);
+  const [crddetails, setcrddetails] = useState<crdinfo | null>(null);
 
   const getDate = () => {
     var months = [
@@ -63,6 +88,17 @@ function Main(props: Props) {
     }`;
   };
 
+  const gotoSell = () => {
+    const docs: Element[] = Array.from(
+      document.getElementsByClassName("contentmain")
+    );
+
+    docs.forEach((each) => {
+      each.classList.add("hidden");
+      each.id === "sell" && each.classList.remove("hidden");
+    });
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       const dataref = collection(db, "Users");
@@ -73,6 +109,14 @@ function Main(props: Props) {
     fetchUser();
   }, [props.datas?.Type]);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const dataref = doc(db, "Util", "Cards");
+      const datas = await getDoc(dataref);
+      setUtils(datas.data()?.All as gifttype[]);
+    };
+    fetchUser();
+  }, [currentcrd]);
 
   useEffect(() => {
     (async () => {
@@ -206,316 +250,263 @@ function Main(props: Props) {
   };
 
   return (
-    <div className="dashcontent relative">
-      <div
-        className="contentmain p-3 transition-all bg-gray-100 mt-12 rounded-d"
-        id="dashboard"
-      >
-        <div className="flex flex-col sm:flex-row">
-          <h1 className="text-blue pt-4 justify-center text-center sm:text-left flex flex-row font-bold font-serif">
-            <AiOutlineCalendar className="mt-1" /> My Dashboard
+    <MainContext.Provider value={{ crddetails, setcrddetails }}>
+      <div className="dashcontent relative">
+        <div
+          className="contentmain p-3 transition-all bg-gray-100 mt-12 rounded-d"
+          id="dashboard"
+        >
+          <div className="flex flex-col sm:flex-row">
+            <h1 className="text-blue pt-4 justify-center text-center sm:text-left flex flex-row font-bold font-serif">
+              <AiOutlineCalendar className="mt-1" /> My Dashboard
+            </h1>
+            <div className="date mt-2 sm:mt-4 py-1 sm:ml-auto bg-white px-5 rounded-md">
+              {getDate()}
+            </div>
+          </div>
+
+          {props.datas !== undefined && props.datas!.Type === "User" ? (
+            <div></div>
+          ) : props.datas !== undefined && props.datas!.Type === "Admin" ? (
+            <div className="flex flex-wrap mt-4">
+              <div className="user w-1/2 h-fit sm:w-40 rounded-md py-12 px-12 bg-white text-xl">
+                <span className="w-full mx-auto text-center">
+                  <GrUserAdmin size="md" />
+                </span>
+                <span className="text-3xl"> {data} </span>
+                Users
+              </div>
+              <div className="user h-fit rounded-md w-40 ml-2 py-12 px-12 bg-white text-xl">
+                <span className="w-full mx-auto text-center">
+                  <GrUserAdmin size="md" />
+                </span>
+                <span className="text-3xl"> 0 </span>
+                New Users
+              </div>
+            </div>
+          ) : (
+            <div> </div>
+          )}
+        </div>
+
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="sellpage"
+        >
+          <span
+            className="font-bold flex justify-left z-50 relative text-left cursor-pointer text-blue-700"
+            onClick={() => gotoSell()}
+          >
+            {" "}
+            Back{" "}
+          </span>
+          <h1 className="text-blue pt-4  font-bold font-serif">{currentcrd}</h1>
+          <div className="saled border flex flex-col justify-left py-4 px-3">
+            <div className="flex flex-row">
+              <div className="w-20">
+                <img
+                  className="w-full"
+                  src={require(`../../Assets/${currentcrd}.jpg`)}
+                  alt=""
+                />
+              </div>
+              <div className="w-20 flex flex-col">
+                <span>{currentcrd}</span>
+                <span> {crddetails?.rate} </span>
+                <span>USD</span>
+              </div>
+            </div>
+            <span className="border w-fit mt-2 flex justify-left p-1 rounded-md">
+              {" "}
+              {crddetails?.type}{" "}
+            </span>
+            <span className="text-left"> Need: {crddetails?.need} </span>
+            <span className="text-left"> Need wait time: 5mins </span>
+            <br />
+            <hr />
+            <ol className="text-left">
+              <li> No Limit for domination</li>
+              <li> Upload Clear Pictures </li>
+            </ol>
+          </div>
+
+          <div className="border mt-5 py-2 px-3 flex flex-col justify-left">
+            <h2 className="text-left mb-2"> Upload Images</h2>
+            <input type="file" accept="image/png image/jpg" />
+            <p> Total Amount:</p>
+            <p className="w-20 bg-transparent border mt-2 px-2">
+              {" "}
+              Rate x Total Amount
+            </p>
+            <button className="bg-blue-799 px-2"> Submit</button>
+          </div>
+        </div>
+
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="sell"
+        >
+          <h1 className="text-blue pt-4 font-bold font-serif">
+            Sell A Giftcard
           </h1>
-          <div className="date mt-2 sm:mt-4 py-1 sm:ml-auto bg-white px-5 rounded-md">
-            {getDate()}
+          <div className="sellcar mt-4">
+            <div className="border border-none border-left flex flex-row w-full">
+              <TabContext value={selnav}>
+                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <TabList orientation="vertical">
+                    {utils?.map((card, index) => {
+                      return (
+                        <Tab
+                          value={String(index + 1)}
+                          onClick={() => {
+                            setselnav(String(index + 1));
+                            setcurrentcrd(`${card.name}`);
+                          }}
+                          label={card.name}
+                          key={index}
+                        />
+                      );
+                    })}
+                  </TabList>
+                </Box>
+
+                {utils?.map((each, index) => {
+                  return (
+                    <TabPanel
+                      className="w-full"
+                      value={String(index + 1)}
+                      key={index}
+                    >
+                      <div className="w-full cardinfo">
+                        <TabContext value={crdval}>
+                          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                            <TabList>
+                              {utils[Number(selnav) - 1]?.country?.map(
+                                (country, index) => {
+                                  return (
+                                    <Tab
+                                      value={String(index + 1)}
+                                      onClick={() =>
+                                        setcrdval(String(index + 1))
+                                      }
+                                      label={country.name}
+                                      key={index}
+                                    />
+                                  );
+                                }
+                              )}
+                            </TabList>
+                          </Box>
+
+                          {utils[Number(selnav) - 1]?.country?.map(
+                            (country, index) => {
+                              return (
+                                <TabPanel value={String(index + 1)} key={index}>
+                                  <Card
+                                    rate={country.rate}
+                                    cardtype="Physical"
+                                    need={country.need}
+                                    key="orj"
+                                  />
+                                  <Card
+                                    rate={country.rate}
+                                    cardtype="Ecode"
+                                    need={country.need}
+                                    key="orjii"
+                                  />
+                                </TabPanel>
+                              );
+                            }
+                          )}
+                        </TabContext>
+                      </div>
+                    </TabPanel>
+                  );
+                })}
+              </TabContext>
+            </div>
           </div>
         </div>
 
-        {props.datas !== undefined && props.datas!.Type === "User" ? (
-          <div></div>
-        ) : props.datas !== undefined && props.datas!.Type === "Admin" ? (
-          <div className="flex flex-wrap mt-4">
-            <div className="user w-1/2 h-fit sm:w-40 rounded-md py-12 px-12 bg-white text-xl">
-              <span className="w-full mx-auto text-center">
-                <GrUserAdmin size="md" />
-              </span>
-              <span className="text-3xl"> {data} </span>
-              Users
-            </div>
-            <div className="user h-fit rounded-md w-40 ml-2 py-12 px-12 bg-white text-xl">
-              <span className="w-full mx-auto text-center">
-                <GrUserAdmin size="md" />
-              </span>
-              <span className="text-3xl"> 0 </span>
-              New Users
-            </div>
-          </div>
-        ) : (
-          <div> </div>
-        )}
-      </div>
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="transact"
+        >
+          <h1 className="text-blue pt-4 font-bold font-serif mb-2">
+            Transaction Status
+          </h1>
 
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="sell"
-      >
-        <h1 className="text-blue pt-4 font-bold font-serif">Sell A Giftcard</h1>
-        <div className="sellcar mt-4 flex">
-          <div className="w-28 border border-none border-left">
-            <ul className="font-bold">
-              <li className="py-3"> Steam </li>
-              <li className="py-3"> Google Play </li>
-              <li className="py-2"> Verizon </li>
-              <li className="py-3"> Card 4</li>
-              <li className="py-3"> Card 5</li>
-              <li className="py-3"> Card 6</li>
-              <li className="py-3"> Card 7</li>
-              <li className="py-3"> Card 8</li>
-              <li className="py-3"> Card 9</li>
-              <li className="py-3"> Card 10</li>
-            </ul>
-          </div>
-          <div className="w-full cardinfo">
-            <h1> Steam Card</h1>
-          </div>
-        </div>
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="transact"
-      >
-        <h1 className="text-blue pt-4 font-bold font-serif mb-2">
-          Transaction Status
-        </h1>
-
-        {history.map((each, id) => {
-          return (
-            <Status
-              card={each.card as string}
-              type={each.card as string}
-              status={each.status as string}
-              id={each.id as string}
-              date={each.date as string}
-              amount={each.amount}
-              key={id}
-            />
-          );
-        })}
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="atransact"
-      >
-        <h1 className="text-blue-800 pt-4 font-bold font-serif mb-2">
-          Transaction Statuss
-        </h1>
-
-        <div>
-          {history.map((each, index) => {
+          {history.map((each, id) => {
             return (
               <Status
+                card={each.card as string}
                 type={each.card as string}
                 status={each.status as string}
                 id={each.id as string}
                 date={each.date as string}
                 amount={each.amount}
-                name={each.name as string}
-                mail={each.mail}
-                key={index}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="withdraw"
-      >
-        <h1 className="text-blue pt-4 font-bold font-serif">Withdraw Funds</h1>
-        <h2 className="flex withdrawtext  mt-3 w-full text-center rounded-sm justify-center p-2 bg-white">
-          {" "}
-          Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
-          {props.datas?.Balance}{" "}
-        </h2>
-        <input
-          className="rounded-md my-4 flex justify-center mx-auto bg-white w-full sm:w-72 p-2"
-          type="text"
-          placeholder="Amount to Withdraw"
-          id="wamount"
-          ref={ammountref}
-        />
-        <div className="flex">
-          {props.datas?.Bank?.map((each, id) => {
-            return (
-              <Choose
-                name={each.name as string}
-                number={each.number as number}
-                type={each.type as string}
-                pos={id}
-                bank={props.datas!.Bank as []}
                 key={id}
               />
             );
           })}
+
+          <div className="trans hide">
+            <div>
+              {" "}
+              <CgArrowLeft color="black" />{" "}
+            </div>
+          </div>
         </div>
 
-        <button
-          onClick={() =>
-            showModal({
-              type: "yesno",
-              title: `Are You Sure You Want To Withdraw &#8358;${ammountref.current?.value}`,
-              function: withdraw,
-            })
-          }
-          className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-md"
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="atransact"
         >
-          {" "}
-          Withdraw{" "}
-        </button>
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="records"
-      >
-        <h1 className="text-blue-700 pt-4 font-bold font-serif">
-          General Records
-        </h1>
-        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-scroll rounded-md mt-3">
-          <thead>
-            <tr className="bg-blue-800 rounded-md">
-              <th className="px-3 font-semibold text-lg text-white"> S/N </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Date{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Id{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Type{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Amount{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Status{" "}
-              </th>
-            </tr>
-
-            {history.map((each, index) => {
-              return (
-                <tr className="bg-white py-5">
-                  <td style={{ padding: "10px 0" }}> {index + 1} </td>
-                  <td style={{ padding: "10px 0" }}> {each.date} </td>
-                  <td style={{ padding: "10px 0" }}> {each.id} </td>
-                  <td style={{ padding: "10px 0" }}> {each.type} </td>
-                  <td style={{ padding: "10px 0" }}> &#8358;{each.amount} </td>
-                  <td style={{ padding: "10px 0" }}>
-                    {" "}
-                    <span
-                      className={`${
-                        each.status === "Pending"
-                          ? "text-red-700 bg-red-200 "
-                          : "text-green-900 bg-green-200"
-                      }  py-2 px-3 rounded-md`}
-                    >
-                      {" "}
-                      {each.status}
-                    </span>{" "}
-                  </td>
-                </tr>
-              );
-            })}
-          </thead>
-        </table>
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="arecords"
-      >
-        <h1 className="text-blue-700 pt-4 font-bold font-serif">
-          General Records
-        </h1>
-        <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-scroll rounded-md mt-3">
-          <thead>
-            <tr className="bg-blue-800 rounded-md">
-              <th className="px-3 font-semibold text-lg text-white"> S/N </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Date{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Id{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Type{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                User Name{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Amount{" "}
-              </th>
-              <th className="px-3 font-semibold text-lg text-white">
-                {" "}
-                Transaction Status{" "}
-              </th>
-            </tr>
-
-            {history.map((each, index) => {
-              return (
-                <tr className="bg-white py-5">
-                  <td style={{ padding: "10px 0" }}> {index + 1} </td>
-                  <td style={{ padding: "10px 0" }}> {each.date} </td>
-                  <td style={{ padding: "10px 0" }}> {each.id} </td>
-                  <td style={{ padding: "10px 0" }}> {each.type} </td>
-                  <td style={{ padding: "10px 0" }}> {each.name} </td>
-                  <td style={{ padding: "10px 0" }}> &#8358;{each.amount} </td>
-                  <td style={{ padding: "10px 0" }}>
-                    {" "}
-                    <span
-                      className={`${
-                        each.status === "Pending"
-                          ? "text-red-700 bg-red-200 "
-                          : "text-green-900 bg-green-200"
-                      }  py-2 px-3 rounded-md`}
-                    >
-                      {" "}
-                      {each.status}
-                    </span>{" "}
-                  </td>
-                </tr>
-              );
-            })}
-          </thead>
-        </table>
-      </div>
-
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="bank"
-      >
-        <div className="flex flex-col text-left">
-          <h1
-            onClick={() => {
-              showModal({
-                type: "custom",
-                title: "Add New Bank",
-                custom: AddBank,
-                function: Addbanks,
-              });
-            }}
-            className="text-blue-900 mx-auto mt-3 w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center"
-          >
-            <GrAddCircle className="mt-1 mr-1 text-blue-900" color="blue" /> Add
-            A New Bank
+          <h1 className="text-blue-800 pt-4 font-bold font-serif mb-2">
+            Transaction Statuss
           </h1>
-          <div className="flex flex-col md:flex-row font-semibold mr-2 sm:mx-2">
+
+          <div>
+            {history.map((each, index) => {
+              return (
+                <Status
+                  type={each.card as string}
+                  status={each.status as string}
+                  id={each.id as string}
+                  date={each.date as string}
+                  amount={each.amount}
+                  name={each.name as string}
+                  mail={each.mail}
+                  key={index}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="withdraw"
+        >
+          <h1 className="text-blue pt-4 font-bold font-serif">
+            Withdraw Funds
+          </h1>
+          <h2 className="flex withdrawtext  mt-3 w-full text-center rounded-sm justify-center p-2 bg-white">
+            {" "}
+            Total Balance: <TbCurrencyNaira height="100%" color="black" />{" "}
+            {props.datas?.Balance}{" "}
+          </h2>
+          <input
+            className="rounded-md my-4 flex justify-center mx-auto bg-white w-full sm:w-72 p-2"
+            type="text"
+            placeholder="Amount to Withdraw"
+            id="wamount"
+            ref={ammountref}
+          />
+          <div className="flex">
             {props.datas?.Bank?.map((each, id) => {
               return (
-                <Bank
+                <Choose
                   name={each.name as string}
                   number={each.number as number}
                   type={each.type as string}
@@ -526,60 +517,243 @@ function Main(props: Props) {
               );
             })}
           </div>
-        </div>
-      </div>
 
-      <div
-        className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
-        id="user"
-      >
-        <div className="flex flex-col text-left">
-          <h1 className="text-blue-900 mx-auto w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center">
-            User Information
+          <button
+            onClick={() =>
+              showModal({
+                type: "yesno",
+                title: `Are You Sure You Want To Withdraw &#8358;${ammountref.current?.value}`,
+                function: withdraw,
+              })
+            }
+            className="bg-blue-600 hover:bg-blue-400 text-white py-1 px-3 rounded-md"
+          >
+            {" "}
+            Withdraw{" "}
+          </button>
+        </div>
+
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="records"
+        >
+          <h1 className="text-blue-700 pt-4 font-bold font-serif">
+            General Records
           </h1>
-          <div className="flexmb-2 mr-2 sm:mx-2">
-            <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
-              <thead>
-                <tr className="bg-blue-800 rounded-md">
-                  <th className="px-3 font-semibold text-lg text-white">
-                    {" "}
-                    S/N{" "}
-                  </th>
-                  <th className="px-3 font-semibold text-lg text-white">
-                    {" "}
-                    Username{" "}
-                  </th>
-                  <th className="px-3 font-semibold text-lg text-white">
-                    {" "}
-                    User Email{" "}
-                  </th>
-                  <th className="px-3 font-semibold text-lg text-white">
-                    {" "}
-                    Total Transaction{" "}
-                  </th>
-                  <th className="px-3 font-semibold text-lg text-white">
-                    {" "}
-                    User Status{" "}
-                  </th>
-                </tr>
-                {/* 
-                {data?.map((each, index) => {
-                  return (
-                    <tr>
-                      <td> {index} </td>
-                      <td> {each.date} </td>
-                      <td> {each.id} </td>
-                      <td> {each.type} </td>
-                      <td> {each.status} </td>
-                    </tr>
-                  );
-                })} */}
-              </thead>
-            </table>
+          <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-scroll rounded-md mt-3">
+            <thead>
+              <tr className="bg-blue-800 rounded-md">
+                <th className="px-3 font-semibold text-lg text-white"> S/N </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Date{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Id{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Type{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Amount{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Status{" "}
+                </th>
+              </tr>
+
+              {history.map((each, index) => {
+                return (
+                  <tr key={index} className="bg-white py-5">
+                    <td style={{ padding: "10px 0" }}> {index + 1} </td>
+                    <td style={{ padding: "10px 0" }}> {each.date} </td>
+                    <td style={{ padding: "10px 0" }}> {each.id} </td>
+                    <td style={{ padding: "10px 0" }}> {each.type} </td>
+                    <td style={{ padding: "10px 0" }}>
+                      {" "}
+                      &#8358;{each.amount}{" "}
+                    </td>
+                    <td style={{ padding: "10px 0" }}>
+                      {" "}
+                      <span
+                        className={`${
+                          each.status === "Pending"
+                            ? "text-red-700 bg-red-200 "
+                            : "text-green-900 bg-green-200"
+                        }  py-2 px-3 rounded-md`}
+                      >
+                        {" "}
+                        {each.status}
+                      </span>{" "}
+                    </td>
+                  </tr>
+                );
+              })}
+            </thead>
+          </table>
+        </div>
+
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="arecords"
+        >
+          <h1 className="text-blue-700 pt-4 font-bold font-serif">
+            General Records
+          </h1>
+          <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-scroll rounded-md mt-3">
+            <thead>
+              <tr className="bg-blue-800 rounded-md">
+                <th className="px-3 font-semibold text-lg text-white"> S/N </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Date{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Id{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Type{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  User Name{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Amount{" "}
+                </th>
+                <th className="px-3 font-semibold text-lg text-white">
+                  {" "}
+                  Transaction Status{" "}
+                </th>
+              </tr>
+
+              {history.map((each, index) => {
+                return (
+                  <tr key={index} className="bg-white py-5">
+                    <td style={{ padding: "10px 0" }}> {index + 1} </td>
+                    <td style={{ padding: "10px 0" }}> {each.date} </td>
+                    <td style={{ padding: "10px 0" }}> {each.id} </td>
+                    <td style={{ padding: "10px 0" }}> {each.type} </td>
+                    <td style={{ padding: "10px 0" }}> {each.name} </td>
+                    <td style={{ padding: "10px 0" }}>
+                      {" "}
+                      &#8358;{each.amount}{" "}
+                    </td>
+                    <td style={{ padding: "10px 0" }}>
+                      {" "}
+                      <span
+                        className={`${
+                          each.status === "Pending"
+                            ? "text-red-700 bg-red-200 "
+                            : "text-green-900 bg-green-200"
+                        }  py-2 px-3 rounded-md`}
+                      >
+                        {" "}
+                        {each.status}
+                      </span>{" "}
+                    </td>
+                  </tr>
+                );
+              })}
+            </thead>
+          </table>
+        </div>
+
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="bank"
+        >
+          <div className="flex flex-col text-left">
+            <h1
+              onClick={() => {
+                showModal({
+                  type: "custom",
+                  title: "Add New Bank",
+                  custom: AddBank,
+                  function: Addbanks,
+                });
+              }}
+              className="text-blue-900 mx-auto mt-3 w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center"
+            >
+              <GrAddCircle className="mt-1 mr-1 text-blue-900" color="blue" />{" "}
+              Add A New Bank
+            </h1>
+            <div className="flex flex-col md:flex-row font-semibold mr-2 sm:mx-2">
+              {props.datas?.Bank?.map((each, id) => {
+                return (
+                  <Bank
+                    name={each.name as string}
+                    number={each.number as number}
+                    type={each.type as string}
+                    pos={id}
+                    bank={props.datas!.Bank as []}
+                    key={id}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="contentmain p-2 hidden bg-gray-100 mt-12 rounded-d"
+          id="user"
+        >
+          <div className="flex flex-col text-left">
+            <h1 className="text-blue-900 mx-auto w-fit flex z-10  mb-3 cursor-pointer font-semibold text-center">
+              User Information
+            </h1>
+            <div className="flexmb-2 mr-2 sm:mx-2">
+              <table className="mx-auto justify-center flex flex-col sm:flex-row overflow-hidden rounded-md mt-3">
+                <thead>
+                  <tr className="bg-blue-800 rounded-md">
+                    <th className="px-3 font-semibold text-lg text-white">
+                      {" "}
+                      S/N{" "}
+                    </th>
+                    <th className="px-3 font-semibold text-lg text-white">
+                      {" "}
+                      Username{" "}
+                    </th>
+                    <th className="px-3 font-semibold text-lg text-white">
+                      {" "}
+                      User Email{" "}
+                    </th>
+                    <th className="px-3 font-semibold text-lg text-white">
+                      {" "}
+                      Total Transaction{" "}
+                    </th>
+                    <th className="px-3 font-semibold text-lg text-white">
+                      {" "}
+                      User Status{" "}
+                    </th>
+                  </tr>
+                  {/* 
+                  {data?.map((each, index) => {
+                    return (s
+                      <tr>
+                        <td> {index} </td>
+                        <td> {each.date} </td>
+                        <td> {each.id} </td>
+                        <td> {each.type} </td>
+                        <td> {each.status} </td>
+                      </tr>
+                    );
+                  })} */}
+                </thead>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </MainContext.Provider>
   );
 }
 

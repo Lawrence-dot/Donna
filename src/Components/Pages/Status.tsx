@@ -1,5 +1,4 @@
 import { TbCurrencyNaira } from "react-icons/tb";
-import { useNavigate } from "react-router";
 
 interface Props {
   type: string;
@@ -13,20 +12,8 @@ interface Props {
 }
 
 function Status(props: Props) {
-  const navigate = useNavigate();
   const opentrans = () => {
-    navigate("/trans", {
-      state: {
-        type: props.type,
-        id: props.id,
-        status: props.status,
-        date: props.date,
-        card: props.card,
-        name: props.name,
-        mail: props.mail,
-        amount: props.amount,
-      },
-    });
+    console.log("kk");
   };
   return (
     <div
