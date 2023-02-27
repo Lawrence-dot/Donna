@@ -30,10 +30,11 @@
 }
 
 .preloaderimg {
-  animation: anim .6s infinite;
+  animation: anim 0.6s infinite;
 }
 
-.modal, .bankform {
+.modal,
+.bankform {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,7 +45,7 @@
   width: 100vw;
 }
 
-.modal>div {
+.modal > div {
   background-color: white;
   margin: auto;
   padding: 10px;
@@ -54,6 +55,15 @@
   min-width: 290px;
   max-width: 300px;
   margin: 50% 10px;
+}
+
+.pxx-0 {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+
+.pyy-0 {
+  padding-top: 0px!important;
 }
 
 .bankcontent {
@@ -68,14 +78,14 @@
 .dashBoard::before {
   content: "";
   background-size: cover;
-  -webkit-animation: .4s intro-devider-animation ease-in-out .33333s;
-  animation: .4s intro-devider-animation ease-in-out .33333s;
-    animation-delay: 0.33333s;
-    animation-fill-mode: none;
+  -webkit-animation: 0.4s intro-devider-animation ease-in-out 0.33333s;
+  animation: 0.4s intro-devider-animation ease-in-out 0.33333s;
+  animation-delay: 0.33333s;
+  animation-fill-mode: none;
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
-  -webkit-animation-delay: .3s;
-  animation-delay: .3s;
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s;
   background-image: url("../Assets/nature_mountain_galaxy_night_landscape_fog_stars_ultrahd_4k_wallpaper_1920x1200.JPG");
   position: absolute;
   top: 0px;
@@ -83,7 +93,7 @@
   height: 100vh;
   width: 100%;
   background-repeat: no-repeat;
-  opacity: .4;
+  opacity: 0.4;
   /* z-index: -9; */
   height: 106.1vh;
 }
@@ -92,25 +102,23 @@
   .dashBoard::before {
     height: 107.2vh;
   }
-  
 }
 
 @media (max-width: 639px) {
   .preloaderimg {
-    animation: anim100 .6s infinite;
+    animation: anim100 0.6s infinite;
   }
 
-  .modal>div {
+  .modal > div {
     margin: 37% 10px;
     margin-top: -10px;
   }
-  
 }
 
 @keyframes anim {
   0% {
     height: 190px;
-    opacity: .2;
+    opacity: 0.2;
   }
 
   100% {
@@ -122,7 +130,7 @@
 @keyframes anim100 {
   0% {
     height: 130px;
-    opacity: .2;
+    opacity: 0.2;
   }
 
   100% {

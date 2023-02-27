@@ -99,6 +99,14 @@ function Main(props: Props) {
     });
   };
 
+  const loadImage = (event: any) => {
+    var output = document.getElementById("output") as HTMLInputElement;
+    output!.src = URL.createObjectURL(event.target.files[0]);
+    output!.onload = function () {
+      URL.revokeObjectURL(output?.src);
+    };
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       const dataref = collection(db, "Users");
@@ -294,14 +302,13 @@ function Main(props: Props) {
           id="sellpage"
         >
           <span
-            className="font-bold flex justify-left z-50 relative text-left cursor-pointer text-blue-700"
+            className="font-bold flex ml-2 justify-left z-50 relative text-left cursor-pointer text-blue-700"
             onClick={() => gotoSell()}
           >
             {" "}
             Back{" "}
           </span>
-          <h1 className="text-blue pt-4  font-bold font-serif">{currentcrd}</h1>
-          <div className="saled border flex flex-col justify-left py-4 px-3">
+          <div className="saled border mt-3 flex flex-col justify-left py-4 px-3">
             <div className="flex flex-row">
               <div className="w-20">
                 <img
@@ -332,11 +339,40 @@ function Main(props: Props) {
 
           <div className="border mt-5 py-2 px-3 flex flex-col justify-left">
             <h2 className="text-left mb-2"> Upload Images</h2>
-            <input type="file" accept="image/png image/jpg" />
-            <p> Total Amount:</p>
+            <div className="uplimg">
+              <label htmlFor="upload">
+                <img
+                  className="my-3"
+                  height="120"
+                  width="130"
+                  src={require("../../Assets/Dummy.png")}
+                  alt=""
+                  id="output"
+                />
+              </label>
+              <form action="">
+                <input
+                  type="file"
+                  hidden
+                  onChange={(e) => loadImage(e)}
+                  id="upload"
+                  accept="image/png image/jpg"
+                />
+              </form>
+            </div>
+
             <p className="w-fit bg-transparent border mt-2 px-2">
               {" "}
               Rate x Total Amount
+            </p>
+            <input
+              className="w-32 mt-2 p-1 px-2"
+              placeholder="User Remarks"
+              type="text"
+            />
+            <p className="w-fit text-red-700 mt-2 px-2">
+              {" "}
+              Note: You can type out the card code for faster process
             </p>
             <button className="bg-blue-700 hover:bg-blue-500 px-3 py-1 w-fit mx-auto mt-3 text-white rounded-md">
               {" "}
@@ -356,7 +392,7 @@ function Main(props: Props) {
             <div className="border border-none border-left flex flex-row w-full">
               <TabContext value={selnav}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList orientation="vertical">
+                  <TabList orientation="vertical" variant="scrollable">
                     {utils?.map((card, index) => {
                       return (
                         <Tab
@@ -376,14 +412,19 @@ function Main(props: Props) {
                 {utils?.map((each, index) => {
                   return (
                     <TabPanel
-                      className="w-full"
+                      className="w-full overflow-hidden"
                       value={String(index + 1)}
                       key={index}
                     >
                       <div className="w-full cardinfo">
                         <TabContext value={crdval}>
                           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                            <TabList>
+                            <TabList
+                              className="pyy-0"
+                              variant="scrollable"
+                              scrollButtons
+                              allowScrollButtonsMobile
+                            >
                               {utils[Number(selnav) - 1]?.country?.map(
                                 (country, index) => {
                                   return (
@@ -404,7 +445,11 @@ function Main(props: Props) {
                           {utils[Number(selnav) - 1]?.country?.map(
                             (country, index) => {
                               return (
-                                <TabPanel value={String(index + 1)} key={index}>
+                                <TabPanel
+                                  className="pxx-0"
+                                  value={String(index + 1)}
+                                  key={index}
+                                >
                                   <Card
                                     rate={country.rate}
                                     cardtype="Physical"
