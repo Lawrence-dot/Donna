@@ -100,6 +100,10 @@ function Main(props: Props) {
       each.classList.add("hidden");
       each.id === "sell" && each.classList.remove("hidden");
     });
+
+    amountRef.current.value = "";
+    remarkRef.current.value = "";
+    setAmount(0);
   };
 
   const loadImage = (event: any) => {
