@@ -59,6 +59,9 @@ function Main(props: Props) {
   const [selnav, setselnav] = useState<string>("1");
   const [utils, setUtils] = useState<gifttype[]>([]);
   const [crddetails, setcrddetails] = useState<crdinfo | null>(null);
+  const [amount, setAmount] = useState<Number>();
+  const amountRef = useRef<HTMLInputElement | null>(null);
+  const remarkRef = useRef<HTMLInputElement | null>(null);
 
   const getDate = () => {
     var months = [
@@ -142,6 +145,40 @@ function Main(props: Props) {
       }
     })();
   }, [props.datas]);
+
+  // const sellCard = () => {
+  //   const dataref = doc(
+  //     db,
+  //     "History",
+  //     `All`
+  //   );
+  //   const data: history = {
+  //     name: `${props.datas.Username}`,
+  //     amount: Number(amount),
+  //     card: `${currentcrd}`,
+  //     date: `${new Date().toDateString}`,
+  //     id: "dojgo5r",
+  //     status: "Pending",
+  //     type: "sell",
+  //     // bank: props.datas?.Bank[0],
+  //     mail: props.datas.Email,
+  //     remark: remarkRef.current?.value
+  //   }
+  //   // await updateDoc(dataref, { History: arrayUnion(data) })
+  //   // .then(() => {
+  //   //   navcontext?.fetchdata();
+  //   //   showModal({
+  //   //     type: "ok",
+  //   //     title: "Bank Added Successfully",
+  //   //   });
+  //   // })
+  //   // .catch((err) => {
+  //   //   showModal({
+  //   //     type: "ok",
+  //   //     title: err.message,
+  //   //   });
+  //   // });
+  // }
 
   const Addbanks = async () => {
     const data = {
@@ -302,7 +339,7 @@ function Main(props: Props) {
           id="sellpage"
         >
           <span
-            className="font-bold flex ml-2 justify-left z-50 relative text-left cursor-pointer text-blue-700"
+            className="font-bold flex ml-2 justify-left z-10 relative text-left cursor-pointer text-blue-700"
             onClick={() => gotoSell()}
           >
             {" "}
@@ -361,19 +398,28 @@ function Main(props: Props) {
               </form>
             </div>
 
+            <input
+              className="w-56 border border-blue-700 rounded-sm mt-2 p-1 px-2"
+              placeholder="Total Amount"
+              type="number"
+              ref={amountRef}
+              onChange={() =>
+                setAmount(Number(amountRef!.current?.value) * crddetails!.rate)
+              }
+            />
+
             <p className="w-fit bg-transparent border mt-2 px-2">
               {" "}
-              Rate x Total Amount
+              {amount !== undefined &&
+                `Total Amount: $${amount.toLocaleString()}`}
             </p>
             <input
-              className="w-32 mt-2 p-1 px-2"
-              placeholder="User Remarks"
+              className="w-56 border border-blue-700 rounded-sm mt-2 p-1 px-2"
+              placeholder="Note: You can type out the card code for faster process"
               type="text"
+              id="remark"
+              ref={remarkRef}
             />
-            <p className="w-fit text-red-700 mt-2 px-2">
-              {" "}
-              Note: You can type out the card code for faster process
-            </p>
             <button className="bg-blue-700 hover:bg-blue-500 px-3 py-1 w-fit mx-auto mt-3 text-white rounded-md">
               {" "}
               Submit
@@ -412,7 +458,7 @@ function Main(props: Props) {
                 {utils?.map((each, index) => {
                   return (
                     <TabPanel
-                      className="w-full overflow-hidden"
+                      className="w-full pyy-0 overflow-hidden"
                       value={String(index + 1)}
                       key={index}
                     >
@@ -422,7 +468,6 @@ function Main(props: Props) {
                             <TabList
                               className="pyy-0"
                               variant="scrollable"
-                              scrollButtons
                               allowScrollButtonsMobile
                             >
                               {utils[Number(selnav) - 1]?.country?.map(

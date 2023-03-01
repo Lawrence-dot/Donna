@@ -32,6 +32,7 @@ export interface history {
   amount?: number;
   mail?: string;
   bank?: account;
+  remark?: string;
 }
 
 export type HomeType = {
