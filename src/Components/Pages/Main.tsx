@@ -101,8 +101,8 @@ function Main(props: Props) {
       each.id === "sell" && each.classList.remove("hidden");
     });
 
-    amountRef.current.value = "";
-    remarkRef.current.value = "";
+    // amountRef!.current?.value = 0;
+    // remarkRef!.current?.value = "";
     setAmount(0);
   };
 
