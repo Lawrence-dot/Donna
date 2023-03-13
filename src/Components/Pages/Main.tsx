@@ -11,7 +11,7 @@ import { TbCurrencyNaira } from "react-icons/tb";
 import Bank from "./Bank";
 import { showModal } from "./Modal";
 import { AddBank } from "./AddBank";
-import { GrAddCircle, GrUserAdmin } from "react-icons/gr";
+import { GrAddCircle, GrUserAdmin, GrCheckmark } from "react-icons/gr";
 import { dataType, history } from "../../Interfaces/interfaces";
 import {
   collection,
@@ -21,7 +21,7 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
-import { db } from "../../Firebase";
+import { db, fileref } from "../../Firebase";
 import { navContext } from "../Pages/Dasboard";
 import Status from "./Status";
 import Choose from "./Choose";
@@ -30,6 +30,9 @@ import { Box, Tab } from "@mui/material";
 import { TabPanel, TabList, TabContext } from "@mui/lab";
 import Card from "../Pages/Card";
 import { gifttype } from "../../Interfaces/interfaces";
+import { uploadBytes, ref } from "firebase/storage";
+import Loading from "../Pages/Loading";
+import Tabs from "../Pages/Tabs";
 
 interface Props {
   datas: dataType;
@@ -62,6 +65,11 @@ function Main(props: Props) {
   const [amount, setAmount] = useState<Number>();
   const amountRef = useRef<HTMLInputElement | null>(null);
   const remarkRef = useRef<HTMLInputElement | null>(null);
+  const submitRef = useRef<HTMLInputElement | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loaded, setLoaded] = useState<boolean>(false);
+
+  const { v4: uuidv4 } = require("uuid");
 
   const getDate = () => {
     var months = [
@@ -150,39 +158,69 @@ function Main(props: Props) {
     })();
   }, [props.datas]);
 
-  // const sellCard = () => {
-  //   const dataref = doc(
-  //     db,
-  //     "History",
-  //     `All`
-  //   );
-  //   const data: history = {
-  //     name: `${props.datas.Username}`,
-  //     amount: Number(amount),
-  //     card: `${currentcrd}`,
-  //     date: `${new Date().toDateString}`,
-  //     id: "dojgo5r",
-  //     status: "Pending",
-  //     type: "sell",
-  //     // bank: props.datas?.Bank[0],
-  //     mail: props.datas.Email,
-  //     remark: remarkRef.current?.value
-  //   }
-  //   // await updateDoc(dataref, { History: arrayUnion(data) })
-  //   // .then(() => {
-  //   //   navcontext?.fetchdata();
-  //   //   showModal({
-  //   //     type: "ok",
-  //   //     title: "Bank Added Successfully",
-  //   //   });
-  //   // })
-  //   // .catch((err) => {
-  //   //   showModal({
-  //   //     type: "ok",
-  //   //     title: err.message,
-  //   //   });
-  //   // });
-  // }
+  const sellCard = async () => {
+    setLoading(true);
+
+    const opts: Element[] = Array.from(
+      document.getElementsByClassName("bankchoose")
+    );
+    var opt = opts.filter((each) => {
+      return each.classList.contains("active");
+    });
+    var pos: number = Number(opt[0].id);
+
+    const newId = uuidv4();
+    const id = `Sel${newId}`;
+    console.log(id);
+    const thisref = ref(fileref, `${id}.jpg`);
+
+    const dataref = doc(db, "History", `All`);
+    const data: history = {
+      name: `${props.datas.Username}`,
+      amount: Number(amount),
+      card: `${currentcrd}`,
+      date: `${new Date().toLocaleString()}`,
+      id: id,
+      status: "Pending",
+      type: "sell",
+      bank: props!.datas.Bank![pos],
+      mail: props.datas.Email,
+      remark: remarkRef.current?.value,
+    };
+
+    await updateDoc(dataref, { History: arrayUnion(data) })
+      .then(() => {
+        uploadBytes(thisref, submitRef!.current!.files![0])
+          .then(() => {
+            navcontext?.fetchdata();
+            showModal({
+              type: "ok",
+              title: "Request Processing........",
+            });
+          })
+          .catch((err) => {
+            setLoading(false);
+            showModal({
+              type: "ok",
+              title: err.message,
+            });
+          })
+          .finally(() => {
+            setLoading(false);
+            setLoaded(true);
+            setTimeout(() => {
+              setLoaded(false);
+              gotoSell();
+            }, 2000);
+          });
+      })
+      .catch((err) => {
+        showModal({
+          type: "ok",
+          title: err.message,
+        });
+      });
+  };
 
   const Addbanks = async () => {
     const data = {
@@ -315,16 +353,19 @@ function Main(props: Props) {
           </div>
 
           {props.datas !== undefined && props.datas!.Type === "User" ? (
-            <div></div>
+            <div className="flex flex-col sm:flex-row">
+              <Tabs title="Total Transactions" content={"$100"} />
+              <Tabs title="Status" content={"Active"} color="red" />
+              <Tabs title="Active rate" content={"10%"} color="red" />
+              <Tabs title="Avg Click Rate" content={"30%"} />
+            </div>
           ) : props.datas !== undefined && props.datas!.Type === "Admin" ? (
-            <div className="flex flex-wrap mt-4">
-              <div className="user w-1/2 h-fit sm:w-40 rounded-md py-12 px-12 bg-white text-xl">
-                <span className="w-full mx-auto text-center">
-                  <GrUserAdmin size="md" />
-                </span>
-                <span className="text-3xl"> {data} </span>
-                Users
-              </div>
+            <div className="flex flex-col sm:flex-row flex-wrap mt-4">
+              <Tabs title="Total Users" content={data} />
+              <Tabs title="New Users" content={0} />
+              <Tabs title="Active Users" content={data} />
+              <Tabs title="Total Income" content={"$100,000"} />
+
               <div className="user h-fit rounded-md w-40 ml-2 py-12 px-12 bg-white text-xl">
                 <span className="w-full mx-auto text-center">
                   <GrUserAdmin size="md" />
@@ -346,88 +387,120 @@ function Main(props: Props) {
             className="font-bold flex ml-2 justify-left z-10 relative text-left cursor-pointer text-blue-700"
             onClick={() => gotoSell()}
           >
-            {" "}
-            Back{" "}
+            &#9166;
           </span>
-          <div className="saled border mt-3 flex flex-col justify-left py-4 px-3">
-            <div className="flex flex-row">
-              <div className="w-20">
-                <img
-                  className="w-full"
-                  src={require(`../../Assets/${currentcrd}.jpg`)}
-                  alt=""
-                />
+          <div className="flex flex-col sm:flex-row flex-wrap mt-3 sm:mt-5">
+            <div className="saled w-full sm:w-1/2 border border-blue-700 mt-3 sm:mt-0 flex flex-col justify-left py-4 px-3">
+              <div className="flex flex-row">
+                <div className="w-20">
+                  <img
+                    className="w-full"
+                    src={require(`../../Assets/${currentcrd}.jpg`)}
+                    alt=""
+                  />
+                </div>
+                <div className="w-20 flex flex-col">
+                  <span>{currentcrd}</span>
+                  <span> {crddetails?.rate} </span>
+                  <span>USD</span>
+                </div>
               </div>
-              <div className="w-20 flex flex-col">
-                <span>{currentcrd}</span>
-                <span> {crddetails?.rate} </span>
-                <span>USD</span>
-              </div>
-            </div>
-            <span className="border w-fit mt-2 flex justify-left p-1 rounded-md">
-              {" "}
-              {crddetails?.type}{" "}
-            </span>
-            <span className="text-left"> Need: {crddetails?.need} </span>
-            <span className="text-left"> Need wait time: 5mins </span>
-            <br />
-            <hr />
-            <ol className="text-left mt-2">
-              <li> 1. No Limit for domination</li>
-              <li> 2. Upload Clear Pictures </li>
-            </ol>
-          </div>
-
-          <div className="border mt-5 py-2 px-3 flex flex-col justify-left">
-            <h2 className="text-left mb-2"> Upload Images</h2>
-            <div className="uplimg">
-              <label htmlFor="upload">
-                <img
-                  className="my-3"
-                  height="120"
-                  width="130"
-                  src={require("../../Assets/Dummy.png")}
-                  alt=""
-                  id="output"
-                />
-              </label>
-              <form action="">
-                <input
-                  type="file"
-                  hidden
-                  onChange={(e) => loadImage(e)}
-                  id="upload"
-                  accept="image/png image/jpg"
-                />
-              </form>
+              <span className="border w-fit mt-2 flex justify-left p-1 rounded-md">
+                {" "}
+                {crddetails?.type}{" "}
+              </span>
+              <span className="text-left"> Need: {crddetails?.need} </span>
+              <span className="text-left"> Need wait time: 5mins </span>
+              <br />
+              <hr />
+              <ol className="text-left mt-2">
+                <li> 1. No Limit for domination</li>
+                <li> 2. Upload Clear Pictures </li>
+              </ol>
             </div>
 
-            <input
-              className="w-56 border border-blue-700 rounded-sm mt-2 p-1 px-2"
-              placeholder="Total Amount"
-              type="number"
-              ref={amountRef}
-              onChange={() =>
-                setAmount(Number(amountRef!.current?.value) * crddetails!.rate)
-              }
-            />
+            <div className="flex w-full px-3 sm:ml-0 flex-row sm:w-1/2 border border-blue-700 mt-2 sm:mt-0">
+              <p> Select an Account </p>
+              {props.datas?.Bank?.map((each, id) => {
+                return (
+                  <Choose
+                    name={each.name as string}
+                    number={each.number as number}
+                    type={each.type as string}
+                    pos={id}
+                    bank={props.datas!.Bank as []}
+                    key={id}
+                  />
+                );
+              })}
+            </div>
 
-            <p className="w-fit bg-transparent border mt-2 px-2">
-              {" "}
-              {amount !== undefined &&
-                `Total Amount: $${amount.toLocaleString()}`}
-            </p>
-            <input
-              className="w-56 border border-blue-700 rounded-sm mt-2 p-1 px-2"
-              placeholder="Note: You can type out the card code for faster process"
-              type="text"
-              id="remark"
-              ref={remarkRef}
-            />
-            <button className="bg-blue-700 hover:bg-blue-500 px-3 py-1 w-fit mx-auto mt-3 text-white rounded-md">
-              {" "}
-              Submit
-            </button>
+            <div className="border w-full ml-0 border-blue-700 sm:w-1/2 mt-5 sm:mt-2 py-2 px-3 flex flex-col justify-left">
+              <h2 className="text-left mb-2"> Upload Images</h2>
+              <div className="uplimg">
+                <label htmlFor="upload">
+                  <img
+                    className="my-3 mx-auto"
+                    height="120"
+                    width="130"
+                    src={require("../../Assets/Dummy.png")}
+                    alt=""
+                    id="output"
+                  />
+                </label>
+                <form action="">
+                  <input
+                    type="file"
+                    hidden
+                    onChange={(e) => loadImage(e)}
+                    id="upload"
+                    accept="image/png image/jpg"
+                    ref={submitRef}
+                  />
+                </form>
+              </div>
+
+              <input
+                className="border border-blue-700 rounded-sm mt-2 p-1 px-2"
+                placeholder="Total Amount"
+                type="number"
+                ref={amountRef}
+                onChange={() =>
+                  setAmount(
+                    Number(amountRef!.current?.value) * crddetails!.rate
+                  )
+                }
+              />
+
+              <p className="w-fit bg-transparent border mt-2 px-2">
+                {" "}
+                {amount !== undefined &&
+                  `Total Amount: $${amount.toLocaleString()}`}
+              </p>
+              <input
+                className=" h-fit border border-blue-700 rounded-sm mt-2 p-1 px-2"
+                placeholder="Note: You can type out the card code for faster process"
+                type="text"
+                id="remark"
+                ref={remarkRef}
+              />
+
+              <button
+                onClick={sellCard}
+                className="border border-blue-700 text-blue-700 hover:text-white hover:bg-blue-700 px-3 py-1 w-fit mx-auto mt-3 text-white rounded-md"
+              >
+                {" "}
+                {loading && !loaded ? (
+                  <Loading />
+                ) : loaded ? (
+                  <div className="loaded">
+                    <GrCheckmark color="white" />
+                  </div>
+                ) : (
+                  `Submit`
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
